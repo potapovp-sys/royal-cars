@@ -325,7 +325,7 @@
     overflow: hidden !important;
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
   }
-  .login-screen.hidden { display: none; }
+  .login-screen.hidden { display: none !important; }
 
   .login-left {
     flex: 1;
@@ -784,28 +784,6 @@
   .empty-state { text-align: center; padding: 48px; color: var(--gray400); font-size: 14px; }
   .empty-state .big { font-size: 48px; margin-bottom: 14px; }
 
-  .dl-card { background: rgba(16,16,20,0.95); border-radius: var(--radius); padding: 18px 20px; border: 1px solid rgba(255,255,255,0.06); cursor: pointer; transition: all 0.25s cubic-bezier(0.16,1,0.3,1); position: relative; overflow: hidden; }
-  .dl-card:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(0,0,0,0.4); }
-  .dl-card.active-filter { border-width: 2px; }
-  .dl-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
-  .dl-card.overdue::before { background: #e74c3c; }
-  .dl-card.today::before { background: var(--gold); }
-  .dl-card.soon::before { background: #e67e22; }
-  .dl-card.inwork::before { background: #5dade2; }
-  .dl-card.done::before { background: #2ecc71; }
-  .dl-card.overdue.active-filter { border-color: #e74c3c; }
-  .dl-card.today.active-filter { border-color: var(--gold); }
-  .dl-card.soon.active-filter { border-color: #e67e22; }
-  .dl-card.inwork.active-filter { border-color: #5dade2; }
-  .dl-card.done.active-filter { border-color: #2ecc71; }
-  .dl-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 8px; }
-  .dl-count { font-family: 'JetBrains Mono', monospace; font-size: 32px; font-weight: 700; line-height: 1; }
-  .dl-card.overdue .dl-count { color: #e74c3c; }
-  .dl-card.today .dl-count { color: var(--gold2); }
-  .dl-card.soon .dl-count { color: #e67e22; }
-  .dl-card.inwork .dl-count { color: #4ea8f5; }
-  .dl-card.done .dl-count { color: #00f5c4; }
-  .dl-sub { font-size: 11px; color: var(--gray400); margin-top: 5px; }
 
   /* deadline badge in table */
   .dl-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; }
@@ -834,6 +812,49 @@
   @media (max-width: 1200px) {
     .table-wrap table { min-width: 900px; }
     .col-hide-lg { display: none; }
+  /* ── COMPACT DEADLINE STRIP ── */
+  .deadline-grid {
+    display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: nowrap;
+  }
+  .dl-card {
+    flex: 1; min-width: 0;
+    background: rgba(16,16,20,0.95);
+    border-radius: 10px;
+    padding: 12px 16px;
+    border: 1px solid rgba(255,255,255,0.06);
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative; overflow: hidden;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .dl-card:hover { transform: translateY(-1px); border-color: rgba(255,255,255,0.12); }
+  .dl-card.active-filter { border-width: 1.5px; }
+  /* Left accent bar */
+  .dl-card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 10px 0 0 10px; }
+  .dl-card.overdue::before  { background: #e74c3c; }
+  .dl-card.today::before    { background: var(--gold2); }
+  .dl-card.soon::before     { background: #e67e22; }
+  .dl-card.inwork::before   { background: #4ea8f5; }
+  .dl-card.done::before     { background: #00f5c4; }
+  /* Count + label inline */
+  .dl-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 26px; font-weight: 700; line-height: 1; flex-shrink: 0;
+  }
+  .dl-card.overdue .dl-count  { color: #e74c3c; }
+  .dl-card.today .dl-count    { color: var(--gold2); }
+  .dl-card.soon .dl-count     { color: #e67e22; }
+  .dl-card.inwork .dl-count   { color: #4ea8f5; }
+  .dl-card.done .dl-count     { color: #00f5c4; }
+  .dl-text { min-width: 0; }
+  .dl-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: rgba(255,255,255,0.45);
+    margin-bottom: 2px; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  .dl-sub  { font-size: 10px; color: rgba(255,255,255,0.22); white-space: nowrap; }
+
     .deadline-grid { grid-template-columns: repeat(3,1fr); }
   }
   @media (max-width: 900px) {
@@ -922,29 +943,39 @@
   <!-- Deadline timeline cards -->
   <div class="deadline-grid" id="deadline-grid">
     <div class="dl-card overdue" onclick="filterDeadline('overdue',this)">
-      <div class="dl-label">🔴 Просрочено</div>
       <div class="dl-count" id="dl-overdue">0</div>
-      <div class="dl-sub">дата выдачи прошла</div>
+      <div class="dl-text">
+        <div class="dl-label">Просрочено</div>
+        <div class="dl-sub">дата прошла</div>
+      </div>
     </div>
     <div class="dl-card today" onclick="filterDeadline('today',this)">
-      <div class="dl-label">🟡 Сегодня</div>
       <div class="dl-count" id="dl-today">0</div>
-      <div class="dl-sub">выдача сегодня</div>
+      <div class="dl-text">
+        <div class="dl-label">Сегодня</div>
+        <div class="dl-sub">выдача сегодня</div>
+      </div>
     </div>
     <div class="dl-card soon" onclick="filterDeadline('soon',this)">
-      <div class="dl-label">🟠 Завтра–3 дня</div>
       <div class="dl-count" id="dl-soon">0</div>
-      <div class="dl-sub">скоро выдача</div>
+      <div class="dl-text">
+        <div class="dl-label">Скоро</div>
+        <div class="dl-sub">завтра–3 дня</div>
+      </div>
     </div>
     <div class="dl-card inwork" onclick="filterDeadline('inwork',this)">
-      <div class="dl-label">🔵 В работе</div>
       <div class="dl-count" id="dl-inwork">0</div>
-      <div class="dl-sub">без даты выдачи</div>
+      <div class="dl-text">
+        <div class="dl-label">В работе</div>
+        <div class="dl-sub">без даты</div>
+      </div>
     </div>
     <div class="dl-card done" onclick="filterDeadline('done',this)">
-      <div class="dl-label">🟢 Выданы</div>
       <div class="dl-count" id="dl-done">0</div>
-      <div class="dl-sub">статус «Оплачен»</div>
+      <div class="dl-text">
+        <div class="dl-label">Выданы</div>
+        <div class="dl-sub">оплачено</div>
+      </div>
     </div>
   </div>
 
@@ -2451,8 +2482,11 @@ function checkAuth(){
   if(currentUser){
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('current-user-label').textContent = '👤 '+currentUser;
+    document.body.style.overflow = '';
+    document.body.style.overflowX = 'hidden';
   } else {
     document.getElementById('login-screen').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
   }
 }
 
@@ -2468,6 +2502,8 @@ function doLogin(){
     sessionStorage.setItem('rc_user', user);
     document.getElementById('login-screen').classList.add('hidden');
     document.getElementById('current-user-label').textContent = '👤 '+user;
+    document.body.style.overflow = '';
+    document.body.style.overflowX = 'hidden';
     err.textContent = '';
     showToast('Добро пожаловать, '+user+'!');
   } else {
