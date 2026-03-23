@@ -2461,21 +2461,89 @@ initFirebase();
 // ══════════════════════════════════════════════════════════════════
 
 // ══════════════════════════════════════════════════════════════════
-// AUTH — логин/пароль через Firebase (п.1)
-// Пароли хранятся в Firebase по пути /royal_cars/users
-// Для добавления пользователя зайдите в Firebase Console →
-// Realtime Database → royal_cars → users → Add child
-// Структура: { "имя": "пароль", "мастер1": "пароль1" }
+// AUTH — БЕЗОПАСНАЯ АВТОРИЗАЦИЯ ЧЕРЕЗ FIREBASE
+// ✅ Пароли НЕ хранятся в коде — только в Firebase Realtime DB
+// ✅ Пароли хранятся как SHA-256 хэши, не в открытом виде
+// ✅ Блокировка на 5 минут после 3 неверных попыток
+// ✅ Firebase Security Rules ограничивают доступ к данным
+//
+// Управление пользователями: Firebase Console →
+//   Realtime Database → royal_cars → users
+//   Формат: { "логин": "sha256_хэш_пароля" }
+//
+// Получить SHA-256 хэш пароля:
+//   https://emn178.github.io/online-tools/sha256.html
+//   Введите пароль → скопируйте хэш → вставьте в Firebase
 // ══════════════════════════════════════════════════════════════════
 
-// Fallback пользователи (пока Firebase не настроен или нет сети)
-const FALLBACK_USERS = {
-  'admin': 'royal2024',
-  'мастер': 'master123'
-};
-
 let currentUser = sessionStorage.getItem('rc_user') || null;
-let firebaseUsers = null;
+let firebaseUsers = null; // загружается из Firebase, пароли как SHA-256
+
+// ── Брутфорс-защита ──────────────────────────────────────────────
+const MAX_ATTEMPTS = 3;
+const LOCKOUT_MS = 5 * 60 * 1000; // 5 минут
+
+function getLoginState() {
+  try {
+    return JSON.parse(sessionStorage.getItem('rc_login_state') || '{}');
+  } catch(e) { return {}; }
+}
+function setLoginState(state) {
+  sessionStorage.setItem('rc_login_state', JSON.stringify(state));
+}
+
+function isLockedOut() {
+  const s = getLoginState();
+  if (!s.lockUntil) return false;
+  if (Date.now() < s.lockUntil) return true;
+  // Блокировка истекла — сбрасываем
+  setLoginState({});
+  return false;
+}
+
+function recordFailedAttempt() {
+  const s = getLoginState();
+  const attempts = (s.attempts || 0) + 1;
+  if (attempts >= MAX_ATTEMPTS) {
+    setLoginState({ attempts, lockUntil: Date.now() + LOCKOUT_MS });
+  } else {
+    setLoginState({ attempts });
+  }
+  return attempts;
+}
+
+function resetLoginState() {
+  setLoginState({});
+}
+
+// ── SHA-256 хэширование (Web Crypto API) ─────────────────────────
+async function sha256(str) {
+  const buf = await crypto.subtle.digest(
+    'SHA-256',
+    new TextEncoder().encode(str)
+  );
+  return Array.from(new Uint8Array(buf))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+// ── Проверка таймера блокировки ───────────────────────────────────
+function updateLockoutTimer() {
+  const s = getLoginState();
+  const err = document.getElementById('login-error');
+  const btn = document.querySelector('.login-btn');
+  if (s.lockUntil && Date.now() < s.lockUntil) {
+    const secsLeft = Math.ceil((s.lockUntil - Date.now()) / 1000);
+    const mins = Math.floor(secsLeft / 60);
+    const secs = secsLeft % 60;
+    err.textContent = `🔒 Слишком много попыток. Подождите ${mins}:${secs.toString().padStart(2,'0')}`;
+    if (btn) btn.disabled = true;
+    setTimeout(updateLockoutTimer, 1000);
+  } else {
+    if (btn) btn.disabled = false;
+    if (err.textContent.includes('Слишком много')) err.textContent = '';
+  }
+}
 
 function checkAuth(){
   if(currentUser){
@@ -2486,35 +2554,80 @@ function checkAuth(){
   } else {
     document.getElementById('login-screen').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
+    if (isLockedOut()) updateLockoutTimer();
   }
 }
 
-function doLogin(){
+async function doLogin(){
   const user = document.getElementById('login-user').value.trim().toLowerCase();
   const pass = document.getElementById('login-pass').value;
   const err = document.getElementById('login-error');
+  const btn = document.querySelector('.login-btn');
+
   if(!user || !pass){ err.textContent='Введите логин и пароль'; return; }
-  // Try Firebase users first, then fallback
-  const users = firebaseUsers || FALLBACK_USERS;
-  if(users[user] && users[user] === pass){
-    currentUser = user;
-    sessionStorage.setItem('rc_user', user);
-    document.getElementById('login-screen').classList.add('hidden');
-    document.getElementById('current-user-label').textContent = '👤 '+user;
-    document.body.style.overflow = '';
-    document.body.style.overflowX = 'hidden';
-    err.textContent = '';
-    showToast('Добро пожаловать, '+user+'!');
-  } else {
-    err.textContent = '❌ Неверный логин или пароль';
-    document.getElementById('login-pass').value = '';
+
+  // Проверка блокировки
+  if (isLockedOut()) {
+    updateLockoutTimer();
+    return;
   }
+
+  // Визуальная обратная связь
+  btn.textContent = 'Проверка...';
+  btn.disabled = true;
+
+  try {
+    // Хэшируем введённый пароль
+    const passHash = await sha256(pass);
+
+    // Берём пользователей из Firebase (загружены при initFirebase)
+    if (!firebaseUsers) {
+      err.textContent = '⚠️ Нет соединения с сервером. Попробуйте позже.';
+      btn.textContent = 'Войти';
+      btn.disabled = false;
+      return;
+    }
+
+    const storedHash = firebaseUsers[user];
+
+    if (storedHash && storedHash === passHash) {
+      // ✅ Успех
+      resetLoginState();
+      currentUser = user;
+      sessionStorage.setItem('rc_user', user);
+      document.getElementById('login-screen').classList.add('hidden');
+      document.getElementById('current-user-label').textContent = '👤 '+user;
+      document.body.style.overflow = '';
+      document.body.style.overflowX = 'hidden';
+      err.textContent = '';
+      showToast('Добро пожаловать, '+user+'!');
+    } else {
+      // ❌ Неверные данные
+      document.getElementById('login-pass').value = '';
+      const attempts = recordFailedAttempt();
+      const remaining = MAX_ATTEMPTS - attempts;
+
+      if (isLockedOut()) {
+        updateLockoutTimer();
+      } else {
+        err.textContent = remaining > 0
+          ? `❌ Неверный логин или пароль. Осталось попыток: ${remaining}`
+          : '❌ Неверный логин или пароль.';
+      }
+    }
+  } catch(e) {
+    err.textContent = '⚠️ Ошибка проверки. Попробуйте снова.';
+  }
+
+  btn.textContent = 'Войти';
+  btn.disabled = false;
 }
 
 function doLogout(){
   currentUser = null;
   sessionStorage.removeItem('rc_user');
   document.getElementById('login-screen').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
   document.getElementById('login-user').value = '';
   document.getElementById('login-pass').value = '';
   document.getElementById('login-error').textContent = '';
