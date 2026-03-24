@@ -1839,7 +1839,7 @@ function buildWorksPicker(filter){
       const sel=selectedWorks.includes(w);
       const hrs = hoursMap[w] || 0;
       const hrsStr = hrs > 0 ? `<span style="color:var(--teal);font-family:'JetBrains Mono',monospace;font-size:11px;margin-left:auto;flex-shrink:0">${hrs}ч</span>` : '';
-      const safe = w.replace(/\/g,'\\').replace(/'/g,"\'");
+      const safe = w.split('\\').join('\\\\').split("'").join("\\'");
       html+=`<div class="work-item${sel?' selected':''}" onclick="toggleWork('${safe}')">
         <div class="wi-check">${sel?'✓':''}</div>
         <span style="flex:1">${w}</span>
@@ -1882,9 +1882,10 @@ function addCustomWork(e){
 }
 
 function renderWorksTags(){
-  document.getElementById('works-tags').innerHTML=selectedWorks.map(w=>
-    `<div class="work-tag">${w}<button onclick="removeWork('${w.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')">×</button></div>`
-  ).join('');
+  document.getElementById('works-tags').innerHTML=selectedWorks.map(w=>{
+    const ws=w.split('\\').join('\\\\').split("'").join("\\'");
+    return `<div class="work-tag">${w}<button onclick="removeWork('${ws}')">×</button></div>`;
+  }).join('');
 }
 
 // ══════════ MODAL ══════════
@@ -1964,7 +1965,7 @@ function carAutocomplete(val){
   const matches=getCarModels().filter(m=>m.toLowerCase().includes(q)).slice(0,8);
   if(!matches.length){ box.style.display='none'; return; }
   box.innerHTML=matches.map((m,i)=>
-    `<div onclick="selectCar('${m.replace(/'/g,"\'")}');hideSuggestions()"
+    `<div onclick="selectCar('${m.split("'").join("\\'")}');hideSuggestions()"
       style="padding:10px 16px;cursor:pointer;font-size:13px;color:var(--off-white);
              border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.12s"
       onmouseover="this.style.background='rgba(240,160,32,0.12)'"
