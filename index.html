@@ -2997,6 +2997,7 @@ const FIREBASE_CONFIG = {
 // Firebase sync wrapper
 let fbDB = null;
 let fbRef = null;
+let slFbRef = null;
 
 async function initFirebase(){
   if(!FIREBASE_ENABLED) return;
@@ -3271,7 +3272,6 @@ checkAuth();
 
 renderTable();
 updateHeader();
-calcUpdate();
 
 
 // ══════════════════════════════════════════════════════════════════
@@ -3283,7 +3283,6 @@ calcUpdate();
 //   comments: [{text,author,ts}] }
 // ══════════════════════════════════════════════════════════════════
 
-let slFbRef = null;
 let slDb = JSON.parse(localStorage.getItem('sl_db')||'[]');
 let slEditingId = null;
 let slSortCol = null, slSortDir = 1;
