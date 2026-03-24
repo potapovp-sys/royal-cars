@@ -845,6 +845,7 @@
       <div id="sync-status" style="color:var(--gray400);font-size:11px">⚪ Локально</div>
       <div style="display:flex;align-items:center;gap:8px">
         <span id="current-user-label" style="font-size:12px;color:var(--gold2)"></span>
+        <button class="logout-btn" onclick="exportPassport()" title="Скачать паспорт проекта" style="background:rgba(0,212,170,0.12);border:1px solid rgba(0,212,170,0.3);color:#00d4aa;margin-right:4px">📋 Паспорт</button>
         <button class="logout-btn" onclick="doLogout()">Выйти</button>
       </div>
     </div>
@@ -2953,6 +2954,217 @@ function printInvoice(id){
   const win = window.open('', '_blank', 'width=960,height=800');
   win.document.write(invoiceHtml);
   win.document.close();
+}
+
+
+// ══════════════════════════════════════════════════════════════════
+// ЭКСПОРТ ПАСПОРТА ПРОЕКТА
+// Генерирует актуальный .md файл со всеми данными проекта
+// ══════════════════════════════════════════════════════════════════
+function exportPassport() {
+  const now = new Date().toLocaleDateString('ru-RU', {day:'2-digit',month:'2-digit',year:'numeric'});
+  const nowFull = new Date().toLocaleString('ru-RU');
+
+  // Collect live stats from DB
+  const totalCars = db.length;
+  const paidCars = db.filter(r=>r.оплата).length;
+  const revenue = db.reduce((s,r)=>s+(r.цена||0),0).toLocaleString('ru-RU');
+  const worksCount = typeof WORKS_CATALOG !== 'undefined' ? WORKS_CATALOG.length : 423;
+  const schedCount = slDb ? slDb.length : 0;
+
+  const md = `# 📋 ПАСПОРТ ПРОЕКТА — Kuzovport Royal Cars
+> Сгенерирован автоматически: ${nowFull}
+> Передай этот файл + index.html в новый чат для продолжения работы.
+
+---
+
+## 🌐 САЙТ
+
+| Параметр | Значение |
+|----------|----------|
+| URL | https://potapovp-sys.github.io/royal-cars/ |
+| GitHub репо | https://github.com/potapovp-sys/royal-cars |
+| Основной файл | \`index.html\` (один файл, всё внутри) |
+| Хостинг | GitHub Pages |
+
+---
+
+## 📊 ТЕКУЩЕЕ СОСТОЯНИЕ БД (на ${now})
+
+| Показатель | Значение |
+|------------|----------|
+| Авто в учёте | ${totalCars} шт. |
+| Оплачено | ${paidCars} шт. |
+| Общая выручка | ${revenue} ₽ |
+| Работ в справочнике | ${worksCount} шт. |
+| Авто в контроле сроков | ${schedCount} шт. |
+
+---
+
+## 🔥 FIREBASE
+
+### Конфигурация
+\`\`\`javascript
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyB-ROT2w76LRJajXTO06FmQhPoh12rbT18",
+  authDomain: "kuzovport-royalcars.firebaseapp.com",
+  databaseURL: "https://kuzovport-royalcars-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "kuzovport-royalcars",
+  storageBucket: "kuzovport-royalcars.firebasestorage.app",
+  messagingSenderId: "261298461114",
+  appId: "1:261298461114:web:92f0bdd58df88fdc046583",
+  measurementId: "G-9259WN7QJ7"
+};
+\`\`\`
+
+### Firebase Console
+- URL: https://console.firebase.google.com/project/kuzovport-royalcars
+- Realtime DB: https://kuzovport-royalcars-default-rtdb.europe-west1.firebasedatabase.app
+- Регион: Europe-West1 (Бельгия), тариф: Spark (бесплатный)
+
+### Структура базы данных
+\`\`\`
+royal_cars/
+├── db/              ← Учёт авто (все заказ-наряды)
+│   └── {id, гос, зн, авто, работы, себест, цена, статус,
+│          приемка, выдача, нч, мат, заказчик, note,
+│          распределение:[{работа,сумма}], счет, оплата}
+│
+├── users/           ← Логины → SHA-256 хэши паролей
+│   └── "логин": "sha256hash"
+│
+├── works_catalog/   ← Справочник работ (${worksCount} позиций)
+│   └── {name, hours}
+│
+└── schedule/        ← Контроль сроков
+    └── {id, plate, order, model, client, intake,
+         releaseDate, status, masterNote, issued, issuedAt,
+         dateHistory:[{from,to,reason,author,ts}],
+         comments:[{text,author,ts}]}
+\`\`\`
+
+### Управление пользователями
+1. Firebase Console → royal_cars → users
+2. Добавить: \`"логин": "sha256_хэш"\`
+3. SHA-256: https://emn178.github.io/online-tools/sha256.html
+
+---
+
+## 📄 СТРАНИЦЫ САЙТА
+
+### 1. 📋 Учёт авто (\`page-учет\`)
+- Таблица заказ-нарядов с дедлайнами
+- Пикер 423 работ из справочника с нормочасами
+- Расчёт цены: нч × 1000 ₽ + материалы × 1.35 = себестоимость
+- Умное распределение цен по работам (обучение на истории)
+- Кнопка 📄 Счёт — печать счёта с реквизитами ИП
+- Firebase: \`royal_cars/db\`
+
+### 2. 📈 Дашборд (\`page-дашборд\`)
+- KPI: выручка, себестоимость, прибыль, маржа
+- Графики по месяцам/неделям, топы, бренды
+
+### 3. 📅 Контроль сроков (\`page-сроки\`)
+- Авто из 1С с плановыми датами выдачи
+- История переносов дат: обязательная причина при каждом переносе
+- История комментариев с автором
+- Firebase: \`royal_cars/schedule\`
+
+---
+
+## 💰 ЛОГИКА ЦЕН
+
+\`\`\`
+Себестоимость = Нормочасы × 1000 ₽ + Материалы × 1.35
+Цена клиенту = Себестоимость × Коэффициент
+
+Коэффициенты: 1.20 / 1.35 / 1.50 / 1.65 / свой
+
+Подсказка по работам (приоритет):
+  1. 💡 Обучен — из ручных корректировок (localStorage rc_wpm)
+  2. 📊 История — средняя из распределений прошлых заказов
+  3. ⏱️ Нормочасы — пропорционально часам из справочника
+  4. ⚡ Равно — поровну
+\`\`\`
+
+---
+
+## 🧾 РЕКВИЗИТЫ ИП (для счёта)
+
+\`\`\`
+ИП Потапова Татьяна Андреевна
+ИНН: 890413611233
+Адрес: 105187, Москва, ул 1-я Измайловского Зверинца, д.8
+АО "АЛЬФА-БАНК" г. Москва
+БИК: 044525593
+Корр. счёт: 30101810200000000593
+Расч. счёт: 40802810302740006190
+\`\`\`
+Номер счёта: автоинкремент в localStorage \`rc_invoice_counter\`
+
+---
+
+## 🔐 АВТОРИЗАЦИЯ
+
+- Пароли: SHA-256 хэши в Firebase \`royal_cars/users\`
+- Защита: 3 попытки → блокировка 5 минут
+- Сессия: sessionStorage \`rc_user\`
+
+---
+
+## 📦 LOCALSTORAGE
+
+| Ключ | Содержимое |
+|------|-----------|
+| \`rc_db3\` | Кэш учёта авто |
+| \`sl_db\` | Кэш контроля сроков |
+| \`rc_wpm\` | Память цен по работам |
+| \`rc_invoice_counter\` | Счётчик номеров счетов |
+
+---
+
+## 🎨 СТЕК
+
+- Чистый HTML/CSS/JS, один файл index.html
+- Шрифты: Bebas Neue, Montserrat, JetBrains Mono
+- Тёмная тема: #c0392b / #e74c3c (красно-чёрная)
+- Firebase Realtime Database + GitHub Pages
+
+---
+
+## 🛠️ ОБНОВЛЕНИЕ САЙТА
+
+1. Скачай index.html из чата Claude
+2. Открой https://github.com/potapovp-sys/royal-cars
+3. Загрузи файл → GitHub Pages обновит за 1-2 мин
+
+---
+
+## 💬 КАК НАЧАТЬ НОВЫЙ ЧАТ
+
+Прикрепи этот файл + index.html и напиши:
+
+> Вот паспорт проекта и текущий index.html.
+> Продолжим разработку сайта Kuzovport Royal Cars.
+> Нужно сделать: [опиши задачу]
+
+---
+
+*Паспорт сгенерирован автоматически кнопкой 📋 Паспорт на сайте*
+*Дата: ${nowFull}*
+`;
+
+  // Download as .md file
+  const blob = new Blob([md], {type: 'text/markdown;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `kuzovport_passport_${now.replace(/\./g,'-')}.md`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('📋 Паспорт проекта скачан!');
 }
 
 function showToast(msg,isError=false){
