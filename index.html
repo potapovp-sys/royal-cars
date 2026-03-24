@@ -174,8 +174,6 @@
   .works-list { list-style: none; }
   .works-list li { font-size: 13px; color: var(--gray200); padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
   .works-list li:last-child { border-bottom: none; }
-  .result-rows { display: flex; flex-direction: column; gap: 5px; }
-  .result-row { display: flex; justify-content: space-between; padding: 7px 12px; border-radius: 6px; background: rgba(255,255,255,0.04); font-size: 13px; }
   .r-label { color: var(--gray400); }
   .r-val { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
 
@@ -216,62 +214,12 @@
   .custom-work-input:focus { border-color: var(--gold); }
   .custom-work-input::placeholder { color: var(--gray400); }
 
-  .calc-preview { background: rgba(8,12,20,0.8); border-radius: 10px; padding: 16px; margin-top: 16px; border: 1px solid var(--glass-border); }
-  .calc-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
-  .calc-row:last-child { border-bottom: none; }
-  .calc-row.total { font-weight: 700; font-size: 15px; color: var(--gold2); padding-top: 10px; border-top: 1px solid var(--gold); border-bottom: none; margin-top: 4px; }
-  .calc-row label { color: var(--gray400); }
 
   /* CALCULATOR PAGE */
-  .calc-page { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-  .calc-card { background: var(--glass-bg); backdrop-filter: blur(12px); border-radius: var(--radius); border: 1px solid var(--glass-border); overflow: hidden; }
-  .calc-card-header { background: linear-gradient(90deg, var(--navy) 0%, var(--navy3) 100%); padding: 16px 20px; border-bottom: 1px solid var(--navy3); display: flex; align-items: center; gap: 10px; }
-  .calc-card-header .sn { width: 28px; height: 28px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: var(--navy); }
-  .calc-card-header h3 { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1.5px; color: var(--gold-light); }
-  .calc-card-body { padding: 20px; }
-  .calc-field { margin-bottom: 16px; }
-  .calc-field label { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gold2); margin-bottom: 6px; }
-  .calc-field input, .calc-field select { width: 100%; background: var(--navy3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 14px; color: var(--white); font-family: 'JetBrains Mono', monospace; font-size: 15px; outline: none; transition: border-color 0.2s; }
-  .calc-field input:focus, .calc-field select:focus { border-color: var(--gold); }
-  .calc-field select { font-family: 'Montserrat', sans-serif; font-size: 14px; cursor: pointer; }
-  .calc-field select option { background: var(--navy2); }
-  .result-big { background: var(--navy); border-radius: 12px; padding: 24px; border: 1px solid var(--gold); text-align: center; margin-top: 8px; }
-  .result-big .rlabel { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold2); margin-bottom: 8px; }
-  .result-big .price { font-family: 'JetBrains Mono', monospace; font-size: 38px; font-weight: 600; color: var(--gold2); }
-  .result-big .pline { margin-top: 8px; font-size: 14px; }
   .mbadge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; margin-top: 8px; }
 
   /* PRICING */
-  .pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-bottom: 32px; }
-  .pricing-card { border-radius: var(--radius); border: 2px solid; overflow: hidden; transition: transform 0.2s; }
-  .pricing-card:hover { transform: translateY(-4px); }
-  .pricing-card.low { border-color: #e74c3c; background: linear-gradient(135deg,#2a0e0e 0%,var(--navy2) 100%); }
-  .pricing-card.mid { border-color: var(--gold); background: linear-gradient(135deg,#2a1e00 0%,var(--navy2) 100%); }
-  .pricing-card.high { border-color: #2ecc71; background: linear-gradient(135deg,#0a2a12 0%,var(--navy2) 100%); }
-  .pricing-card-header { padding: 20px 24px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); }
-  .pricing-card-header .icon { font-size: 28px; margin-bottom: 6px; }
-  .pricing-card-header h3 { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 2px; }
-  .pricing-card.low h3 { color: #e74c3c; }
-  .pricing-card.mid h3 { color: var(--gold2); }
-  .pricing-card.high h3 { color: #2ecc71; }
-  .pricing-range { font-size: 12px; color: var(--gray400); margin-top: 4px; }
-  .pricing-card-body { padding: 20px 24px; }
-  .pricing-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 13px; }
-  .pricing-row:last-child { border-bottom: none; }
-  .pricing-row .p-label { color: var(--gray400); }
-  .pricing-row .p-val { color: var(--white); font-weight: 600; }
-  .pricing-coef { font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 600; text-align: center; padding: 12px; border-radius: 8px; margin: 12px 0; }
-  .pricing-card.low .pricing-coef { background: rgba(231,76,60,0.15); color: #e74c3c; }
-  .pricing-card.mid .pricing-coef { background: rgba(200,150,12,0.15); color: var(--gold2); }
-  .pricing-card.high .pricing-coef { background: rgba(46,204,113,0.15); color: #2ecc71; }
 
-  .stats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; }
-  .stat-block { background: rgba(14,14,18,0.95); border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.06); padding: 20px; }
-  .stat-block h4 { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.35); margin-bottom: 14px; font-weight: 700; }
-  .stat-item { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
-  .stat-item:last-child { border-bottom: none; }
-  .stat-item .s-label { color: var(--gray400); }
-  .stat-item .s-val { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
 
   /* DASHBOARD */
   .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -645,8 +593,6 @@
   .works-list { list-style: none; }
   .works-list li { font-size: 13px; color: var(--gray200); padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
   .works-list li:last-child { border-bottom: none; }
-  .result-rows { display: flex; flex-direction: column; gap: 5px; }
-  .result-row { display: flex; justify-content: space-between; padding: 7px 12px; border-radius: 6px; background: rgba(255,255,255,0.04); font-size: 13px; }
   .r-label { color: var(--gray400); }
   .r-val { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
 
@@ -687,62 +633,12 @@
   .custom-work-input:focus { border-color: var(--gold); }
   .custom-work-input::placeholder { color: var(--gray400); }
 
-  .calc-preview { background: rgba(8,12,20,0.8); border-radius: 10px; padding: 16px; margin-top: 16px; border: 1px solid var(--glass-border); }
-  .calc-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
-  .calc-row:last-child { border-bottom: none; }
-  .calc-row.total { font-weight: 700; font-size: 15px; color: var(--gold2); padding-top: 10px; border-top: 1px solid var(--gold); border-bottom: none; margin-top: 4px; }
-  .calc-row label { color: var(--gray400); }
 
   /* CALCULATOR PAGE */
-  .calc-page { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-  .calc-card { background: var(--glass-bg); backdrop-filter: blur(12px); border-radius: var(--radius); border: 1px solid var(--glass-border); overflow: hidden; }
-  .calc-card-header { background: linear-gradient(90deg, var(--navy) 0%, var(--navy3) 100%); padding: 16px 20px; border-bottom: 1px solid var(--navy3); display: flex; align-items: center; gap: 10px; }
-  .calc-card-header .sn { width: 28px; height: 28px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: var(--navy); }
-  .calc-card-header h3 { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1.5px; color: var(--gold-light); }
-  .calc-card-body { padding: 20px; }
-  .calc-field { margin-bottom: 16px; }
-  .calc-field label { display: block; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--gold2); margin-bottom: 6px; }
-  .calc-field input, .calc-field select { width: 100%; background: var(--navy3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 14px; color: var(--white); font-family: 'JetBrains Mono', monospace; font-size: 15px; outline: none; transition: border-color 0.2s; }
-  .calc-field input:focus, .calc-field select:focus { border-color: var(--gold); }
-  .calc-field select { font-family: 'Montserrat', sans-serif; font-size: 14px; cursor: pointer; }
-  .calc-field select option { background: var(--navy2); }
-  .result-big { background: var(--navy); border-radius: 12px; padding: 24px; border: 1px solid var(--gold); text-align: center; margin-top: 8px; }
-  .result-big .rlabel { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--gold2); margin-bottom: 8px; }
-  .result-big .price { font-family: 'JetBrains Mono', monospace; font-size: 38px; font-weight: 600; color: var(--gold2); }
-  .result-big .pline { margin-top: 8px; font-size: 14px; }
   .mbadge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; margin-top: 8px; }
 
   /* PRICING */
-  .pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-bottom: 32px; }
-  .pricing-card { border-radius: var(--radius); border: 2px solid; overflow: hidden; transition: transform 0.2s; }
-  .pricing-card:hover { transform: translateY(-4px); }
-  .pricing-card.low { border-color: #e74c3c; background: linear-gradient(135deg,#2a0e0e 0%,var(--navy2) 100%); }
-  .pricing-card.mid { border-color: var(--gold); background: linear-gradient(135deg,#2a1e00 0%,var(--navy2) 100%); }
-  .pricing-card.high { border-color: #2ecc71; background: linear-gradient(135deg,#0a2a12 0%,var(--navy2) 100%); }
-  .pricing-card-header { padding: 20px 24px 16px; border-bottom: 1px solid rgba(255,255,255,0.08); }
-  .pricing-card-header .icon { font-size: 28px; margin-bottom: 6px; }
-  .pricing-card-header h3 { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 2px; }
-  .pricing-card.low h3 { color: #e74c3c; }
-  .pricing-card.mid h3 { color: var(--gold2); }
-  .pricing-card.high h3 { color: #2ecc71; }
-  .pricing-range { font-size: 12px; color: var(--gray400); margin-top: 4px; }
-  .pricing-card-body { padding: 20px 24px; }
-  .pricing-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.06); font-size: 13px; }
-  .pricing-row:last-child { border-bottom: none; }
-  .pricing-row .p-label { color: var(--gray400); }
-  .pricing-row .p-val { color: var(--white); font-weight: 600; }
-  .pricing-coef { font-family: 'JetBrains Mono', monospace; font-size: 28px; font-weight: 600; text-align: center; padding: 12px; border-radius: 8px; margin: 12px 0; }
-  .pricing-card.low .pricing-coef { background: rgba(231,76,60,0.15); color: #e74c3c; }
-  .pricing-card.mid .pricing-coef { background: rgba(200,150,12,0.15); color: var(--gold2); }
-  .pricing-card.high .pricing-coef { background: rgba(46,204,113,0.15); color: #2ecc71; }
 
-  .stats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; }
-  .stat-block { background: rgba(14,14,18,0.95); border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.06); padding: 20px; }
-  .stat-block h4 { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.35); margin-bottom: 14px; font-weight: 700; }
-  .stat-item { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
-  .stat-item:last-child { border-bottom: none; }
-  .stat-item .s-label { color: var(--gray400); }
-  .stat-item .s-val { font-family: 'JetBrains Mono', monospace; font-weight: 600; }
 
   /* DASHBOARD */
   .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
@@ -917,8 +813,6 @@
     </div>
     <nav class="nav-tabs">
       <button class="nav-tab active" onclick="showPage('учет',this)">📋 Учёт авто</button>
-      <button class="nav-tab" onclick="showPage('калькулятор',this)">🧮 Калькулятор</button>
-      <button class="nav-tab" onclick="showPage('наценки',this)">💰 Наценки</button>
       <button class="nav-tab" onclick="showPage('дашборд',this)">📈 Дашборд</button>
     </nav>
     <div class="header-stats">
@@ -1012,119 +906,6 @@
     </table>
   </div>
   <div id="table-empty" class="empty-state" style="display:none"><div class="big">🔍</div>Ничего не найдено</div>
-</div>
-
-<!-- ══════════════ КАЛЬКУЛЯТОР ══════════════ -->
-<div class="page" id="page-калькулятор">
-  <div class="section-title" style="margin-bottom:20px">КАЛЬКУЛЯТОР СТОИМОСТИ ЗАКАЗА</div>
-  <div class="calc-page">
-    <div>
-      <div class="calc-card" style="margin-bottom:20px">
-        <div class="calc-card-header"><div class="sn">1</div><h3>Нормочасы</h3></div>
-        <div class="calc-card-body">
-          <div class="calc-field"><label>Количество нормочасов</label><input type="number" id="c-nh" value="0" min="0" step="0.5" oninput="calcUpdate()"></div>
-          <div class="calc-field"><label>Ставка нормочаса (₽)</label><input type="number" id="c-rate" value="1000" min="1" oninput="calcUpdate()"></div>
-        </div>
-      </div>
-      <div class="calc-card" style="margin-bottom:20px">
-        <div class="calc-card-header"><div class="sn">2</div><h3>Материалы</h3></div>
-        <div class="calc-card-body">
-          <div class="calc-field"><label>Стоимость материалов (₽)</label><input type="number" id="c-mat" value="0" min="0" oninput="calcUpdate()"></div>
-        </div>
-      </div>
-      <div class="calc-card">
-        <div class="calc-card-header"><div class="sn">3</div><h3>Группа наценки</h3></div>
-        <div class="calc-card-body">
-          <div class="calc-field">
-            <label>Выберите группу</label>
-            <select id="c-group" onchange="calcUpdate()">
-              <option value="1.20">🔴 Низкая — ×1.20</option>
-              <option value="1.35" selected>🟡 Средняя — ×1.35 (рекомендуется)</option>
-              <option value="1.50">🟢 Высокая — ×1.50</option>
-              <option value="1.65">🟢🟢 Премиум — ×1.65</option>
-              <option value="custom">✏️ Свой коэффициент...</option>
-            </select>
-          </div>
-          <div class="calc-field" id="custom-coef-wrap" style="display:none">
-            <label>Коэффициент (напр. 1.45)</label>
-            <input type="number" id="c-custom" value="1.45" min="1" step="0.05" oninput="calcUpdate()">
-          </div>
-        </div>
-      </div>
-    </div>
-    <div>
-      <div class="calc-card">
-        <div class="calc-card-header"><div class="sn">💰</div><h3>Результат</h3></div>
-        <div class="calc-card-body">
-          <div class="result-big">
-            <div class="rlabel">ЦЕНА ДЛЯ ЗАКАЗЧИКА</div>
-            <div class="price" id="r-price">0 ₽</div>
-            <div class="pline" id="r-pline" style="color:var(--gray400)">Введите данные</div>
-            <div class="mbadge" id="r-mbadge" style="background:rgba(255,255,255,0.05);color:var(--gray400)">—</div>
-          </div>
-          <div class="result-rows" style="margin-top:16px">
-            <div class="result-row"><span class="r-label">Нормочасы × ставка</span><span class="r-val" id="r-works">0 ₽</span></div>
-            <div class="result-row"><span class="r-label">Материалы</span><span class="r-val" id="r-mat">0 ₽</span></div>
-            <div class="result-row" style="background:rgba(200,150,12,0.08)"><span class="r-label" style="color:var(--gold2);font-weight:700">Итого себестоимость</span><span class="r-val" style="color:var(--gold2)" id="r-cost">0 ₽</span></div>
-            <div class="result-row"><span class="r-label">Коэффициент наценки</span><span class="r-val" id="r-coef">×1.35</span></div>
-            <div class="result-row"><span class="r-label">Прибыль</span><span class="r-val" id="r-profit">0 ₽</span></div>
-            <div class="result-row"><span class="r-label">Маржинальность</span><span class="r-val" id="r-margin">—</span></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════ НАЦЕНКИ ══════════════ -->
-<div class="page" id="page-наценки">
-  <div class="section-title" style="margin-bottom:20px">АНАЛИЗ ЦЕН И ГРУППЫ НАЦЕНКИ</div>
-  <div class="pricing-grid">
-    <div class="pricing-card low">
-      <div class="pricing-card-header"><div class="icon">🔴</div><h3>НИЗКАЯ НАЦЕНКА</h3><div class="pricing-range">Маржа менее 25%</div></div>
-      <div class="pricing-card-body">
-        <div class="pricing-coef">×1.15 — ×1.25</div>
-        <div class="pricing-row"><span class="p-label">Маржа</span><span class="p-val">&lt; 25%</span></div>
-        <div class="pricing-row"><span class="p-label">Применять</span><span class="p-val">Крупные оптовые партнёры</span></div>
-        <div class="pricing-row"><span class="p-label">Себест. 20 000 ₽ →</span><span class="p-val">23 000 – 25 000 ₽</span></div>
-        <div class="pricing-row"><span class="p-label">⚠️ Риск</span><span class="p-val" style="color:#e74c3c">Низкая рентабельность</span></div>
-      </div>
-    </div>
-    <div class="pricing-card mid">
-      <div class="pricing-card-header"><div class="icon">🟡</div><h3>СРЕДНЯЯ НАЦЕНКА</h3><div class="pricing-range">Маржа 25–40% — СТАНДАРТ</div></div>
-      <div class="pricing-card-body">
-        <div class="pricing-coef">×1.30 — ×1.45</div>
-        <div class="pricing-row"><span class="p-label">Маржа</span><span class="p-val">25% — 40%</span></div>
-        <div class="pricing-row"><span class="p-label">Применять</span><span class="p-val">Стандартные заказы Royal Cars</span></div>
-        <div class="pricing-row"><span class="p-label">Себест. 20 000 ₽ →</span><span class="p-val">26 000 – 29 000 ₽</span></div>
-        <div class="pricing-row"><span class="p-label">✅ Статус</span><span class="p-val" style="color:var(--gold2)">Рекомендуемый стандарт</span></div>
-      </div>
-    </div>
-    <div class="pricing-card high">
-      <div class="pricing-card-header"><div class="icon">🟢</div><h3>ВЫСОКАЯ НАЦЕНКА</h3><div class="pricing-range">Маржа 40%+ — премиум</div></div>
-      <div class="pricing-card-body">
-        <div class="pricing-coef">×1.50 — ×1.75+</div>
-        <div class="pricing-row"><span class="p-label">Маржа</span><span class="p-val">≥ 40%</span></div>
-        <div class="pricing-row"><span class="p-label">Применять</span><span class="p-val">Премиум, срочно, сложные работы</span></div>
-        <div class="pricing-row"><span class="p-label">Себест. 20 000 ₽ →</span><span class="p-val">30 000 – 35 000 ₽</span></div>
-        <div class="pricing-row"><span class="p-label">💎 Статус</span><span class="p-val" style="color:#00f5c4">Максимальная доходность</span></div>
-      </div>
-    </div>
-  </div>
-  <div class="section-title" style="margin-bottom:16px">СТАТИСТИКА ПО БАЗЕ</div>
-  <div class="stats-grid">
-    <div class="stat-block"><h4>Общие показатели</h4><div id="stats-general"></div></div>
-    <div class="stat-block"><h4>Распределение по группам маржи</h4><div id="stats-margins"></div></div>
-    <div class="stat-block">
-      <h4>Формула расчёта цены</h4>
-      <div class="stat-item"><span class="s-label">Шаг 1</span><span class="s-val">Нормочасы × 1 000 ₽</span></div>
-      <div class="stat-item"><span class="s-label">Шаг 2</span><span class="s-val">+ Стоимость материалов</span></div>
-      <div class="stat-item"><span class="s-label">Шаг 3</span><span class="s-val">= Себестоимость</span></div>
-      <div class="stat-item"><span class="s-label">Шаг 4</span><span class="s-val">× Коэффициент наценки</span></div>
-      <div class="stat-item"><span class="s-label" style="color:var(--gold2)">Итог</span><span class="s-val" style="color:var(--gold2)">= Цена заказчику</span></div>
-    </div>
-    <div class="stat-block"><h4>Статусы заказов</h4><div id="stats-status"></div></div>
-  </div>
 </div>
 
 <!-- ══════════════ ДАШБОРД ══════════════ -->
@@ -1260,6 +1041,7 @@
           </select>
         </div>
         <div class="form-group"><label>Комментарий</label><input type="text" id="f-note" placeholder="Доп. информация"></div>
+        <div class="form-group"><label>Заказчик (для счёта) <span style="color:var(--gray400);font-weight:400">— имя, ИНН, адрес</span></label><input type="text" id="f-zakazchik" placeholder="ООО Ромашка / Иванов И.И."></div>
       </div>
       <div class="calc-preview">
         <div class="calc-row"><label>Нормочасы</label><span id="m-nh-val">—</span></div>
@@ -1282,97 +1064,521 @@
 
 <script>
 // ══════════ WORKS CATALOG ══════════
-const WORKS_CAT = {
-  'Бамперы': [
-    'Бампер передний — окраска',
-    'Бампер передний — ремонт',
-    'Бампер передний — ремонт + окраска',
-    'Бампер задний — окраска',
-    'Бампер задний — ремонт',
-    'Бампер задний — ремонт + окраска',
-    'Накладка бампера — ремонт/окраска',
-    'Бампер в плёнке — ремонт',
-  ],
-  'Кузов / Крылья': [
-    'Крыло переднее левое — окраска',
-    'Крыло переднее левое — ремонт + окраска',
-    'Крыло переднее правое — окраска',
-    'Крыло переднее правое — ремонт + окраска',
-    'Крыло заднее левое — окраска',
-    'Крыло заднее левое — ремонт + окраска',
-    'Крыло заднее правое — окраска',
-    'Крыло заднее правое — ремонт + окраска',
-    'Капот — окраска',
-    'Капот — ремонт + окраска',
-    'Крыша — окраска',
-    'Крышка багажника — окраска',
-    'Крышка багажника — ремонт + окраска',
-    'Панель передняя — окраска',
-  ],
-  'Двери': [
-    'Дверь передняя левая — окраска',
-    'Дверь передняя левая — ремонт + окраска',
-    'Дверь передняя правая — окраска',
-    'Дверь передняя правая — ремонт + окраска',
-    'Дверь задняя левая — окраска',
-    'Дверь задняя левая — ремонт + окраска',
-    'Дверь задняя правая — окраска',
-    'Дверь задняя правая — ремонт + окраска',
-  ],
-  'Пороги / Арки': [
-    'Накладка порога левая — окраска',
-    'Накладка порога правая — окраска',
-    'Порог левый — ремонт/окраска',
-    'Порог правый — ремонт/окраска',
-    'Арка левая — ремонт/окраска',
-    'Арка правая — ремонт/окраска',
-    'Расширитель арки — ремонт/окраска',
-  ],
-  'ПДР / Вмятины': [
-    'ПДР — крыло',
-    'ПДР — дверь',
-    'ПДР — капот',
-    'ПДР — крыша',
-    'ПДР — бампер',
-    'Удаление вмятин (с окраской)',
-  ],
-  'Полировка': [
-    'Полировка кузова (полная)',
-    'Полировка локальная',
-    'Полировка + защитное покрытие',
-  ],
-  'Плёнка': [
-    'Ремонт в плёнке — бампер',
-    'Ремонт в плёнке — крыло',
-    'Ремонт в плёнке — дверь',
-    'Удаление защитной плёнки',
-    'Оклейка плёнкой — капот',
-    'Оклейка плёнкой — крыло',
-    'Оклейка плёнкой — бампер',
-    'Оклейка плёнкой (полная)',
-  ],
-  'Стёкла': [
-    'Лобовое стекло — срезка/вклейка',
-    'Рамка лобового стекла — ремонт/окраска',
-    'Боковое стекло — замена',
-    'Задняя форточка — замена',
-  ],
-  'Накладки / Хром': [
-    'Хромированная накладка — ремонт/окраска',
-    'Декоративная накладка — ремонт/окраска',
-    'Ручка двери — ремонт/окраска',
-    'Колпак колеса — ремонт/окраска',
-  ],
-  'Электрика / Прочее': [
-    'Электрика — диагностика/ремонт',
-    'Парктроник — пайка/замена',
-    'Датчик — замена',
-    'Сборка/разборка деталей',
-    'Подбор цвета',
-    'Антикоррозийная обработка',
-  ],
-};
+const WORKS_CATALOG = [
+  {"name":"Ремонт пластика","hours":1.64},
+  {"name":"Мелкий ремонт детали","hours":1.22},
+  {"name":"Установка на стапель","hours":0.37},
+  {"name":"Антикор. обработка внутр. полостей","hours":0.37},
+  {"name":"Ремонт пола салона","hours":0.37},
+  {"name":"Работы по колористеке","hours":0.37},
+  {"name":"Нанесение антигравия","hours":0.73},
+  {"name":"Ремонт трапетции стеклоочистителей","hours":0.92},
+  {"name":"Салон разборка","hours":0.73},
+  {"name":"Ремонт арки внутренней","hours":0.73},
+  {"name":"Ремонт проема двери","hours":1.34},
+  {"name":"Стекло передней двери. Замена.","hours":0.43},
+  {"name":"Кузов. Регулировка зазоров.","hours":0.92},
+  {"name":"Подрамник передний. Замена.","hours":1.28},
+  {"name":"Установка навесных элементов","hours":1.22},
+  {"name":"Окрас навесных элементов","hours":1.83},
+  {"name":"Доработка задних арок","hours":0.73},
+  {"name":"Устоновка доп.оборудования","hours":1.83},
+  {"name":"Пол ремонт","hours":0.67},
+  {"name":"Окрас ручек  дверей","hours":0.76},
+  {"name":"Окрас ручки","hours":0.67},
+  {"name":"Окрас парктоников","hours":0.67},
+  {"name":"Установка заглушек в места крепления сидений","hours":0.92},
+  {"name":"Демонтаж салазок сидений","hours":0.61},
+  {"name":"Окрас петли","hours":0.18},
+  {"name":"Устронение перекоса на стапеле","hours":0.06},
+  {"name":"Окрас молдинга лобового стекла","hours":0.58},
+  {"name":"Средняя стойка. Ремонт 2.","hours":0.12},
+  {"name":"Накладка порога левая. С/у.","hours":1.34},
+  {"name":"Накладка порога левая. Ремонт.","hours":1.53},
+  {"name":"Накладка порога правая. Окраска.","hours":1.34},
+  {"name":"Порог левый ремонт 2","hours":0.06},
+  {"name":"Накладка порога левая. Окраска.","hours":0.06},
+  {"name":"Накладка порога правая .Ремонт.","hours":3.97},
+  {"name":"Накладка порога  правая. С/у.","hours":1.22},
+  {"name":"Средняя стойка. Ремонт 1.маляр","hours":2.75},
+  {"name":"Средняя стойка. Замена.","hours":16.87},
+  {"name":"Средняя стойка. Окраска.","hours":14.91},
+  {"name":"Передняя стойка. Замена.","hours":0.51},
+  {"name":"Передняя стойка. Окраска.","hours":0.17},
+  {"name":"Передняя стойка. Ремонт 1.маляр","hours":0.41},
+  {"name":"Передняя стойка. Ремонт 2.","hours":0.41},
+  {"name":"Порог левый. Р/с.","hours":1.53},
+  {"name":"Порог правый. Р/с.","hours":1.1},
+  {"name":"Порог левый. Замена.","hours":0.03},
+  {"name":"Порог правый. Замена.","hours":1.01},
+  {"name":"Порог левый. Окраска.","hours":1.1},
+  {"name":"Порог правый. Окраска.","hours":1.22},
+  {"name":"Порог левый. Ремонт 1.маляр","hours":0.18},
+  {"name":"Порог правый. Ремонт 1.маляр","hours":0.4},
+  {"name":"Молдинг стойки замена","hours":0.06},
+  {"name":"Порог  внутренний замена","hours":0.37},
+  {"name":"Замена усилителя порога","hours":0.55},
+  {"name":"Замена короба порога","hours":0.55},
+  {"name":"Демонтаж защитной плёнки","hours":1.1},
+  {"name":"Порог правый ремонт 2","hours":1.1},
+  {"name":"Окрас подножки правой","hours":0.52},
+  {"name":"Накладка двериС/у","hours":4.28},
+  {"name":"Передняя дверь левая. Накладка. Окраска.","hours":4.28},
+  {"name":"Передняя дверь левая. Окраска с двух сторон двухцветная.","hours":4.58},
+  {"name":"Передняя дверь левая. Окраска с двух сторон.","hours":4.89},
+  {"name":"Передняя дверь левая Окрас частично","hours":4.28},
+  {"name":"Передняя дверь левая. Окраска с одной стороны.","hours":4.28},
+  {"name":"Передняя дверь левая. Р/с.","hours":4.58},
+  {"name":"Передняя дверь левая. Ремонт 1.маляр","hours":4.89},
+  {"name":"Передняя дверь левая. Ремонт 2.","hours":0.55},
+  {"name":"Передняя дверь левая. С/у.","hours":0.86},
+  {"name":"Передняя дверь левая.. Замена.","hours":0.52},
+  {"name":"Передняя дверь правая. Накладка. Окраска.","hours":0.52},
+  {"name":"Передняя дверь правая. Окрас частично","hours":0.4},
+  {"name":"Передняя дверь правая. Окраска с двух сторон.","hours":8.0},
+  {"name":"Замена верхней петли передней левой двери","hours":3.97},
+  {"name":"Передняя дверь правая. Окраска с одной стороны.","hours":3.97},
+  {"name":"Передняя дверь правая. Р/с.","hours":4.28},
+  {"name":"Передняя дверь правая. Ремонт 1.маляр","hours":4.58},
+  {"name":"Передняя дверь правая. Ремонт 2.","hours":3.97},
+  {"name":"Передняя дверь правая. С/у.","hours":3.97},
+  {"name":"Стекло передней левой двери. Замена.","hours":4.28},
+  {"name":"Стекло передней правой двери. Замена.","hours":4.58},
+  {"name":"Передняя дверь правая. Замена.","hours":13.87},
+  {"name":"Стекло передней левой двери. Регулировка.","hours":0.51},
+  {"name":"Стекло передней правой двери. Регулировка.","hours":0.52},
+  {"name":"Окрас проема двери","hours":0.17},
+  {"name":"Частичный окрас двери","hours":0.31},
+  {"name":"Окрас лючка бака","hours":4.89},
+  {"name":"Люк передний. С/у в сборе.","hours":4.89},
+  {"name":"Люк задний. С/у в сборе.","hours":5.19},
+  {"name":"Окрас крыши частично","hours":5.5},
+  {"name":"Крыша. Р/с.","hours":0.44},
+  {"name":"Крыша. Ремонт 1.маляр","hours":0.43},
+  {"name":"Крыша. Ремонт 2.","hours":0.41},
+  {"name":"Крыша. Окраска седан.","hours":3.67},
+  {"name":"Крыша. Окраска вагон.","hours":3.67},
+  {"name":"Крыша. Окраска передней части вагон.","hours":4.58},
+  {"name":"Крыша. Окраска передней части седан.","hours":4.89},
+  {"name":"Ремонт рамки лобового стекла","hours":0.31},
+  {"name":"Крыша. Замена","hours":0.31},
+  {"name":"Окрас стойки правой","hours":0.31},
+  {"name":"Молдинги крыши окрас","hours":1.71},
+  {"name":"Окрас релингов крыши","hours":1.1},
+  {"name":"Окрас верхней бокавины крыши правой","hours":0.81},
+  {"name":"Окрас рамки лобового стекла","hours":1.1},
+  {"name":"Окрас стойки левой","hours":1.1},
+  {"name":"Окрас верхней боковины крыши левой","hours":0.03},
+  {"name":"Ремонт стойки правой передней","hours":1.83},
+  {"name":"13199AA010","hours":0.79},
+  {"name":"Ремонт стойки правой передней Маляр","hours":0.92},
+  {"name":"Накладка двери замена","hours":1.1},
+  {"name":"Стекло задней левой двери. Замена.","hours":1.1},
+  {"name":"Задняя дверь левая.. Замена.","hours":0.92},
+  {"name":"Задняя дверь левая. Окраска с одной стороны.","hours":0.92},
+  {"name":"Задняя дверь левая. Окраска с одной стороны двухцветная..","hours":0.92},
+  {"name":"Задняя дверь левая. Окраска с двух сторон.","hours":1.34},
+  {"name":"Задняя дверь левая. Окрас частично","hours":0.28},
+  {"name":"Задняя дверь левая. Накладка. Окраска.","hours":1.04},
+  {"name":"Задняя дверь правая. Накладка. Окраска.","hours":0.98},
+  {"name":"Задняя дверь правая. Окраска переходом","hours":0.31},
+  {"name":"Задняя дверь правая. Окраска с двух сторон.","hours":0.67},
+  {"name":"Задняя дверь правая Окрас частично","hours":0.67},
+  {"name":"Задняя дверь правая. Окраска с одной стороны.","hours":0.15},
+  {"name":"Стекло задней правой двери. Замена.","hours":0.06},
+  {"name":"Задняя дверь левая. С/у.","hours":1.53},
+  {"name":"Задняя дверь левая. Р/C.","hours":0.06},
+  {"name":"Задняя дверь правая. Р/с.","hours":0.06},
+  {"name":"Задняя дверь правая. С/у.","hours":0.55},
+  {"name":"Задняя дверь левая. Ремонт 1.маляр","hours":0.55},
+  {"name":"Задняя дверь левая. Ремонт 2.","hours":1.1},
+  {"name":"Задняя дверь правая. Ремонт 1.маляр","hours":1.1},
+  {"name":"Задняя дверь правая. Ремонт 2.","hours":0.52},
+  {"name":"Задняя дверь правая.. Замена.","hours":10.14},
+  {"name":"Ручка двери окрас","hours":0.51},
+  {"name":"Окрас рамки задней двери","hours":0.31},
+  {"name":"Кузов. Окраска снаружи.","hours":0.17},
+  {"name":"Кузов. Окраска снаружи с проемами.","hours":0.41},
+  {"name":"Кузов. Ремонт проема двери задний","hours":0.31},
+  {"name":"Кузов. Р/с под окраску с проемами.","hours":0.4},
+  {"name":"Кузов. Ремонт сложного перекоса передней части.","hours":0.4},
+  {"name":"Кузов. Ремонт сложного перекоса задней части.","hours":0.03},
+  {"name":"Кузов. Полировка абразивная одной детали.","hours":0.92},
+  {"name":"Кузов. Ремонт перекоса задней части.","hours":0.18},
+  {"name":"Кузов. Ремонт перекоса передней части.","hours":7.33},
+  {"name":"Кузов. Ремонт проема двери передней","hours":10.08},
+  {"name":"Окрас задней стойки кузова","hours":0.55},
+  {"name":"Ремонт задней стойки кузова","hours":0.55},
+  {"name":"Кузов. Замена задней части.","hours":1.1},
+  {"name":"Зеркало левое. С/у.","hours":1.1},
+  {"name":"Зеркало правое. С/у.","hours":0.52},
+  {"name":"Зеркало левое. Окраска.","hours":4.28},
+  {"name":"Зеркало правое. Окраска.","hours":4.28},
+  {"name":"Зеркало левое. Ремонт.","hours":4.58},
+  {"name":"Зеркало правое. Ремонт.","hours":4.89},
+  {"name":"Зеркало левое. Замена элемента.","hours":1.1},
+  {"name":"Приборная панель . С/у в сборе.","hours":1.22},
+  {"name":"Переднее сидение правое. С/у.","hours":0.43},
+  {"name":"Переднее сидение левое. С/у.","hours":4.28},
+  {"name":"Заднее сидение. С/у.","hours":3.67},
+  {"name":"Центральная консоль. С/у.","hours":4.58},
+  {"name":"Усилитель приборной панели. С/у.","hours":4.89},
+  {"name":"Нанисение герметика на днище кузова авто","hours":1.53},
+  {"name":"Жабо ремонт","hours":0.64},
+  {"name":"Ремень безопасности передний левый. С/у.","hours":1.22},
+  {"name":"Ремень безопасности передний правый. С/у.","hours":1.34},
+  {"name":"Полка зад стекла замена","hours":1.22},
+  {"name":"Салон. Р/с.","hours":1.99},
+  {"name":"Жабо окрас","hours":1.22},
+  {"name":"Ремонт системы безопастности","hours":0.43},
+  {"name":"Окрас проема двери","hours":0.58},
+  {"name":"Замена световой планки","hours":0.98},
+  {"name":"Накладка под фанарь ремонт","hours":1.83},
+  {"name":"Накладка под фанарь окрас","hours":0.86},
+  {"name":"Задний фонарь левый. С/у.","hours":1.34},
+  {"name":"Задний фонарь правый. С/у.","hours":1.34},
+  {"name":"Задний фонарь правый. Ремонт.","hours":0.58},
+  {"name":"Задний фонарь левый. Ремонт.","hours":0.58},
+  {"name":"Фаркоп . С/у.","hours":0.73},
+  {"name":"Задний бампер. Замена.","hours":2.0},
+  {"name":"Задний спойлер. С/у.","hours":2.32},
+  {"name":"Задний спойлер. Окраска.","hours":3.97},
+  {"name":"Задний бампер. Окраска.","hours":3.97},
+  {"name":"Задний бампер. Окраска (Outback).","hours":4.28},
+  {"name":"Задний бампер. С/у.","hours":4.58},
+  {"name":"Задний бампер. Р/с.","hours":0.37},
+  {"name":"Задний бампер. Ремонт маляр","hours":0.92},
+  {"name":"Задний бампер. Ремонт 2.","hours":3.97},
+  {"name":"Усилитель заднего бампера. С/у.","hours":3.97},
+  {"name":"Усилитель заднего бампера. Окрас","hours":4.28},
+  {"name":"Усилитель заднего бампера. Ремонт 2.","hours":4.58},
+  {"name":"Задний спойлер. Ремонт.","hours":1.22},
+  {"name":"Задний бампер. Накладка. Ремонт.","hours":3.67},
+  {"name":"Накладка на задний бампер замена","hours":14.42},
+  {"name":"Окрас накладки заднего бампера","hours":0.51},
+  {"name":"Ремонт накладки заднего бампера","hours":0.51},
+  {"name":"Окрас вставки зад бампера","hours":0.52},
+  {"name":"Частичный окрас бампера","hours":0.52},
+  {"name":"Панель заднего фанаря замена","hours":0.17},
+  {"name":"Арка заднего крыла наружнея ремонт","hours":0.31},
+  {"name":"Арка крыла внутренняя левая. Окраска.","hours":0.61},
+  {"name":"Арка крыла внутренняя правая. Окраска.","hours":0.86},
+  {"name":"Арка крыла внутренняя левая. Ремонт 1.","hours":1.1},
+  {"name":"Арка крыла внутренняя левая. Ремонт 2.","hours":0.46},
+  {"name":"Арка крыла внутренняя правая. Ремонт 1.","hours":0.28},
+  {"name":"Арка крыла внутренняя правая. Ремонт 2.","hours":0.44},
+  {"name":"Арка крыла внутренняя левая в сборе. Замена.","hours":0.66},
+  {"name":"Арка крыла внутренняя правая в сборе. Замена.","hours":4.89},
+  {"name":"Лонжерон задний левый. Замена.","hours":4.89},
+  {"name":"Лонжерон задний правый. Замена.","hours":5.19},
+  {"name":"Лонжерон задний правый. Ремонт 1.","hours":5.5},
+  {"name":"Лонжерон задний левый. Ремонт 1.","hours":0.61},
+  {"name":"Лонжерон задний левый. Ремонт 2.","hours":2.14},
+  {"name":"Лонжерон задний правый. Ремонт 2.","hours":4.09},
+  {"name":"Лонжерон задний левый. Окраска.","hours":1.71},
+  {"name":"Лонжерон задний правый. Окраска.","hours":0.49},
+  {"name":"Панель фанаря замена","hours":0.41},
+  {"name":"Панель фанаря окрас","hours":0.41},
+  {"name":"Заднее крыло ремонт 3 левое","hours":1.83},
+  {"name":"Заднее крыло ремонт 3 правое","hours":3.67},
+  {"name":"Окрас бокавины кабины","hours":3.97},
+  {"name":"Заднее крыло левое. Р/с.","hours":2.44},
+  {"name":"Заднее крыло левое. Ремонт маляр","hours":1.22},
+  {"name":"Заднее крыло левое. Ремонт 2.","hours":0.61},
+  {"name":"Заднее крыло правое. Ремонт 2.","hours":1.53},
+  {"name":"Заднее крыло правое. Ремонт 1.маляр","hours":1.53},
+  {"name":"Заднее крыло правое. Р/с.","hours":0.37},
+  {"name":"Заднее крыло левое. Замена.","hours":1.53},
+  {"name":"Заднее крыло правое. Замена.","hours":0.61},
+  {"name":"Заднее крыло левое. Окраска.","hours":1.28},
+  {"name":"Заднее крыло правое. Окраска.","hours":0.37},
+  {"name":"Заднее крыло левое. Окраска двухцветная.","hours":0.4},
+  {"name":"Заднее крыло правое. Окраска двухцветная.","hours":0.4},
+  {"name":"Накладка заднего крыла. С/у.","hours":0.37},
+  {"name":"Накладка заднего крыла. Окраска.","hours":1.53},
+  {"name":"Накладка заднего крыла. Ремонт","hours":0.49},
+  {"name":"Накладка заднего крыла. С/у обе.","hours":1.68},
+  {"name":"Ремонт внутрянки крыла","hours":1.34},
+  {"name":"Планка под задний фонарь. С/у обе.","hours":0.73},
+  {"name":"Окрас боковины заднего крыла правая","hours":1.1},
+  {"name":"Планка под задний фонарь. Окраска обе.","hours":1.1},
+  {"name":"Ремонт проема двери","hours":0.73},
+  {"name":"Окрас проема двери","hours":4.58},
+  {"name":"Арка внутренняя нанесения герметика окрас","hours":1.22},
+  {"name":"Арка заднего крыла окрас","hours":1.34},
+  {"name":"Частичный окрас крыла","hours":1.34},
+  {"name":"Ремонт проема 5-ой двери","hours":1.34},
+  {"name":"Задняя дверь 5-ая. Замена.","hours":1.34},
+  {"name":"Задняя дверь 5-ая. Окраска с двух сторон.","hours":1.34},
+  {"name":"Задняя дверь 5-ая. Окраска с одной стороны.","hours":0.92},
+  {"name":"Задняя дверь 5-ая. С/у.","hours":1.34},
+  {"name":"Задняя дверь 5-ая. Р/с.","hours":0.73},
+  {"name":"Задняя дверь 5-ая. Ремонт 1маляр","hours":1.28},
+  {"name":"Задняя дверь 5-ая. Ремонт 2.","hours":2.81},
+  {"name":"Частичная окраска 5-й двери","hours":0.03},
+  {"name":"Эмблема окрас","hours":4.28},
+  {"name":"Накладка двери задней Окрас","hours":0.61},
+  {"name":"Пол багажника, Окраска.","hours":3.3},
+  {"name":"Пол багажника ремонт 1.","hours":0.73},
+  {"name":"Пол багажника ремонт 2.","hours":0.79},
+  {"name":"Пол багажника замена","hours":0.73},
+  {"name":"Багажное отделение. Р/с.","hours":0.98},
+  {"name":"Багажное отделение. Окраска.","hours":0.98},
+  {"name":"Устранение перекоса","hours":1.16},
+  {"name":"Багажное отделение. Ремонт","hours":1.1},
+  {"name":"Заднее стекло боковое. Замена.","hours":0.61},
+  {"name":"Заднее стекло боковое. Замена оба.","hours":12.0},
+  {"name":"Заднее стекло боковое. Молдинг. Замена оба.","hours":0.24},
+  {"name":"Заднее стекло боковое. Молдинг.Замена.","hours":5.81},
+  {"name":"Стекло 5-ой двери. Замена.","hours":1.34},
+  {"name":"Заднее стекло седан. Замена.","hours":0.86},
+  {"name":"Задняя панель. Замена.","hours":3.97},
+  {"name":"Задняя панель. Окраска.","hours":1.1},
+  {"name":"Задняя панель. Ремонт маляр","hours":1.1},
+  {"name":"Задняя панель. Ремонт 2.","hours":1.1},
+  {"name":"Задняя панель. Ремонт 3.","hours":1.22},
+  {"name":"Ремонт суппорта фонаря","hours":0.37},
+  {"name":"Задняя панель.Р/с.","hours":0.37},
+  {"name":"Крышка багажника. Окрас частично","hours":0.31},
+  {"name":"Крышка багажника. С/у.","hours":0.37},
+  {"name":"Крышка багажника. Р/с.","hours":1.22},
+  {"name":"Крышка багажника. Окраска с одной стороны.","hours":1.34},
+  {"name":"Крышка багажника. Окраска с двух сторон.","hours":1.1},
+  {"name":"Крышка багажника. Ремонт маляр","hours":1.1},
+  {"name":"Крышка багажника. Ремонт 2.","hours":1.34},
+  {"name":"Петля крышки багахника. Замена.","hours":1.53},
+  {"name":"Петля крышки багахника. Замена. Обе.","hours":0.67},
+  {"name":"Накладка крышки багажника окрас","hours":0.67},
+  {"name":"Накладка крышки багажника ремонт","hours":0.67},
+  {"name":"Бампер передний. Окраска частично","hours":0.21},
+  {"name":"Бампер передний. С/у.","hours":0.06},
+  {"name":"Бампер передний. Р/с.","hours":0.12},
+  {"name":"Бампер передний. Ремонт.маляр","hours":0.4},
+  {"name":"Доп.зашита С/У","hours":0.79},
+  {"name":"Бампер передний. Замена.","hours":0.61},
+  {"name":"Бампер передний. Окраска.","hours":0.06},
+  {"name":"Бампер передний. Установка декоративной сетки.","hours":0.06},
+  {"name":"Форсунка омывателя фар. С/у.","hours":0.55},
+  {"name":"Форсунка омывателя фар. С/у обе.","hours":0.55},
+  {"name":"Усилитель переднего бампера. С/у.","hours":0.52},
+  {"name":"Усилитель переднего бампера. Ремонт 1.","hours":4.28},
+  {"name":"Усилитель переднего бампера. Ремонт 2.","hours":4.28},
+  {"name":"Замена кронштейна бампера","hours":4.58},
+  {"name":"Окрас передней накладки бампера","hours":4.89},
+  {"name":"Установка накладки переднего бампера","hours":4.28},
+  {"name":"Окрас юбки бампера","hours":4.28},
+  {"name":"замена бачка омывателя","hours":4.58},
+  {"name":"Брызговик правый ремонт 3 с применением сварочных работ","hours":4.89},
+  {"name":"Брызговик левый ремонт 3 с применением сварочных работ","hours":0.18},
+  {"name":"Аккомуляторная площядка замена","hours":3.0},
+  {"name":"Пластина крепления пер. бампера Замена","hours":3.97},
+  {"name":"Брызговик правый Р/С","hours":3.97},
+  {"name":"Брызговик левый Р/C","hours":4.28},
+  {"name":"Усилитель крыла ремонт","hours":4.58},
+  {"name":"Передний лонжерон левый. Замена в сборе.","hours":3.97},
+  {"name":"Передний лонжерон правый. Замена в сборе.","hours":3.97},
+  {"name":"Передний лонжерон левый. Замена передней части.","hours":4.28},
+  {"name":"Передний лонжерон правый. Замена передней части.","hours":4.58},
+  {"name":"Передний лонжерон левый. Ремонт 1.","hours":0.51},
+  {"name":"Передний лонжерон левый. Ремонт 2.","hours":0.51},
+  {"name":"Передний лонжерон правый. Ремонт 1.","hours":0.17},
+  {"name":"Передний лонжерон правый. Ремонт 2.","hours":0.31},
+  {"name":"Передний лонжерон левый. Окраска.","hours":4.89},
+  {"name":"Передний лонжерон правый. Окраска.","hours":4.89},
+  {"name":"Брызговик левый. Замена.","hours":5.19},
+  {"name":"Брызговик правый. Замена.","hours":5.5},
+  {"name":"Брызговик левый. Окраска.","hours":0.31},
+  {"name":"Брызговик правый. Окраска.","hours":0.31},
+  {"name":"Брызговик левый. Ремонт 1.","hours":3.67},
+  {"name":"Брызговик левый. Ремонт 2.","hours":3.67},
+  {"name":"Брызговик правый. Ремонт 1.","hours":4.58},
+  {"name":"Брызговик правый. Ремонт 2.","hours":4.89},
+  {"name":"Моторный отсек. Р/с без силового агрегата.","hours":0.31},
+  {"name":"Усилитель крыла левого. Замена","hours":1.53},
+  {"name":"Усилитель крыла правого. Замена","hours":0.31},
+  {"name":"Моторный щит. Ремонт 2.","hours":0.31},
+  {"name":"Моторный щит. Замена","hours":0.01},
+  {"name":"Моторный отсек. Окраска.","hours":0.73},
+  {"name":"Петли капота замена","hours":0.73},
+  {"name":"Частичный окрас капота","hours":0.92},
+  {"name":"Капот. Замена.","hours":0.37},
+  {"name":"Капот турбо. Замена.","hours":2.14},
+  {"name":"Капот. Окраска.","hours":0.03},
+  {"name":"Капот. Окраска с двух сторон.","hours":0.49},
+  {"name":"Воздухозаборник. Окраска.","hours":0.92},
+  {"name":"Воздухозаборник. С/у.","hours":0.06},
+  {"name":"Капот. Ремонт маляр","hours":0.06},
+  {"name":"Капот. Ремонт 2.","hours":0.06},
+  {"name":"Капот. Установка воздухозаборника.","hours":0.18},
+  {"name":"Капот. Установка дополнительных замков.","hours":4.58},
+  {"name":"Капот. С/у.","hours":5.87},
+  {"name":"Капот. Р/с.","hours":9.66},
+  {"name":"Выставления зазоров кузова","hours":0.55},
+  {"name":"Петли капота окрас","hours":0.55},
+  {"name":"Ресничка под фару окрас","hours":1.1},
+  {"name":"Фара левая. С/у.","hours":1.1},
+  {"name":"Фара правая. С/у.","hours":0.52},
+  {"name":"Фара левая противотуманная. С/у.","hours":4.28},
+  {"name":"ПТФ нанесения лака","hours":4.28},
+  {"name":"Фара левая. Ремонт.","hours":4.58},
+  {"name":"Фара правая. Ремонт.","hours":4.89},
+  {"name":"Фара левая противотуманная. Ремонт.","hours":0.73},
+  {"name":"Фара правая противотуманная. Ремонт.","hours":4.28},
+  {"name":"Указатель поворота левый. С/у.","hours":4.28},
+  {"name":"Указатель поворота правый. С/у.","hours":4.58},
+  {"name":"Повторитель поворота левый. С/у.","hours":4.89},
+  {"name":"Повторитель поворота правый. С/у.","hours":1.1},
+  {"name":"Габаритный фонарь левый. С/у.","hours":3.42},
+  {"name":"Габаритный фонарь правый. С/у.","hours":0.43},
+  {"name":"Фара левая. Корпус. Окраска.","hours":0.67},
+  {"name":"Фара правая. Корпус. Окраска.","hours":0.43},
+  {"name":"Ресничка под фару С/У","hours":0.92},
+  {"name":"Полировка фар","hours":0.86},
+  {"name":"Покрытие фар лаком","hours":0.18},
+  {"name":"Подкрылок замена","hours":0.12},
+  {"name":"Облицовка лев . порога окрас","hours":0.18},
+  {"name":"Облицовка прав . порога окрас","hours":3.0},
+  {"name":"Переднее крыло левое. Замена.","hours":0.21},
+  {"name":"Переднее крыло правое. Замена.","hours":1.1},
+  {"name":"Переднее крыло левое. Окраска.","hours":1.53},
+  {"name":"Переднее крыло правое. Окраска.","hours":3.97},
+  {"name":"Переднее крыло левое. Окраска переходом","hours":3.97},
+  {"name":"Переднее крыло правое. Окраска переходом","hours":4.28},
+  {"name":"Переднее крыло левое. Ремонт 1.маляр","hours":4.58},
+  {"name":"Планка под фару левая. С/у.","hours":0.61},
+  {"name":"Переднее крыло правое. Ремонт 1.маляр","hours":3.97},
+  {"name":"Переднее крыло правое. Ремонт 2.","hours":3.97},
+  {"name":"Переднее крыло левое. Ремонт 2.","hours":4.28},
+  {"name":"Планка под фару правая. С/у.","hours":4.58},
+  {"name":"Планка под фару левая. Окраска.","hours":15.28},
+  {"name":"Планка под фару правая. Окраска.","hours":3.97},
+  {"name":"Накладка крыла передняя левая. С/у.","hours":4.89},
+  {"name":"Накладка крыла передняя левая. Окраска.","hours":0.51},
+  {"name":"Накладка крыла передняя левая. Ремонт.","hours":0.51},
+  {"name":"Накладка крыла передняя правая. Окраска.","hours":0.52},
+  {"name":"Накладка крыла передняя правая. Ремонт.","hours":0.52},
+  {"name":"Накладка крыла передняя правая. С/у.","hours":0.17},
+  {"name":"Переднее крыло левое. Р/с.","hours":0.31},
+  {"name":"Переднее крыло левое. .С/у.","hours":4.89},
+  {"name":"Переднее крыло правое. .С/у.","hours":4.89},
+  {"name":"Переднее правое крыло окрас частично","hours":5.19},
+  {"name":"Расширитель окрас","hours":5.5},
+  {"name":"Лобовое стекло. Замена.","hours":1.53},
+  {"name":"Поводки стеклоочистителей. С/у.","hours":1.0},
+  {"name":"Поводки стеклоочистителей. Окраска.","hours":2.32},
+  {"name":"Лобовое стекло. Молдинг. Замена.","hours":2.75},
+  {"name":"Снятие-установа / вклейка/   стекл","hours":0.73},
+  {"name":"Решетка радиатора. С/у.","hours":0.28},
+  {"name":"Решетка радиатора. Окраска.","hours":0.41},
+  {"name":"Решетка радиатора. Ремонт.","hours":0.41},
+  {"name":"Решетка радиатора. Установка декоративной сетки.","hours":3.06},
+  {"name":"Решетка радиатора. Эмблема. С/у.","hours":3.67},
+  {"name":"Передняя панель. С/У.","hours":3.67},
+  {"name":"Передняя панель. Ремонт 1.","hours":4.58},
+  {"name":"Передняя панель. Ремонт 2.","hours":4.89},
+  {"name":"Передняя панель. Окраска.","hours":0.31},
+  {"name":"Передняя панель. Окраска частичная..","hours":0.55},
+  {"name":"Передняя панель. Поперечина нижняя. Замена.","hours":0.73},
+  {"name":"Передняя панель. Центральная планка. Замена.","hours":0.4},
+  {"name":"Передняя панель. Верхняя планка. Замена.","hours":0.4},
+  {"name":"Передняя панель. Рамка под фару левая. Замена.","hours":1.71},
+  {"name":"Передняя панель. Рамка под фару правая. Замена.","hours":0.43},
+  {"name":"Передняя панель. Замена в сборе.","hours":0.73},
+  {"name":"Передняя панель. Поперечина нижняя. ремонт.","hours":1.1},
+  {"name":"Подкапотное пространство окрас (частично)","hours":1.1},
+  {"name":"Ремонт дверного проема","hours":0.01},
+  {"name":"Окрас дверного проема","hours":0.73}
+];
+
+// Auto-generated from справочник works (categories built dynamically)
+const WORKS_CAT = {};
+(function(){
+  const catMap = [
+    ['Бамперы', ['бампер','накладка бампера','спойлер']],
+    ['Крылья', ['крыло']],
+    ['Капот / Крышка', ['капот','крышка']],
+    ['Крыша', ['крыша','люк','рейлинг','релинг']],
+    ['Двери', ['дверь','дверная','петля двери','стекло передней','стекло задней','стекло двери']],
+    ['Пороги / Арки', ['порог','арка','расширитель','подножка']],
+    ['Стойки', ['стойка']],
+    ['Панели', ['панель','поперечина','планка','рамка под фару','бокавина','боковина']],
+    ['Стёкла', ['стекло','лобовое','форточка']],
+    ['Облицовка / Решётка', ['облицовка','решётка','радиатора','бампера нижний','губа']],
+    ['Подкапотное / Кузов', ['подкапотн','пол','короб','усилитель','стапель','кузов','рамка лобов']],
+    ['Молдинги / Накладки', ['молдинг','накладка','молдинги','декор','эмблема','заглушка']],
+    ['Окраска спец.', ['антигравий','антикор','грунт','подбор','колористик','шпаклёв']],
+    ['Салон / Разборка', ['салон','сиденье','сидений','салазк']],
+    ['Полировка', ['полировк']],
+    ['Плёнка', ['плёнк','плен','антигравийн']],
+    ['Прочее', []],
+  ];
+  const assigned = new Set();
+  catMap.forEach(([cat, keys]) => {
+    WORKS_CATALOG.forEach(w => {
+      if(assigned.has(w.name)) return;
+      const low = w.name.toLowerCase();
+      let match = cat === 'Прочее' ? false : keys.some(k => low.includes(k));
+      if(match) {
+        if(!WORKS_CAT[cat]) WORKS_CAT[cat] = [];
+        WORKS_CAT[cat].push(w.name);
+        assigned.add(w.name);
+      }
+    });
+  });
+  // Add uncategorized to Прочее
+  WORKS_CATALOG.forEach(w => {
+    if(!assigned.has(w.name)){
+      if(!WORKS_CAT['Прочее']) WORKS_CAT['Прочее'] = [];
+      WORKS_CAT['Прочее'].push(w.name);
+    }
+  });
+})();
 const ALL_WORKS = Object.values(WORKS_CAT).flat();
+
+// Rebuild WORKS_CAT from WORKS_CATALOG (called when Firebase updates catalog)
+function rebuildWorksCat(){
+  const catMap = [
+    ['Бамперы', ['бампер','накладка бампера','спойлер']],
+    ['Крылья', ['крыло']],
+    ['Капот / Крышка', ['капот','крышка']],
+    ['Крыша', ['крыша','люк','рейлинг','релинг']],
+    ['Двери', ['дверь','дверная','петля двери','стекло передней','стекло задней','стекло двери']],
+    ['Пороги / Арки', ['порог','арка','расширитель','подножка']],
+    ['Стойки', ['стойка']],
+    ['Панели', ['панель','поперечина','планка','рамка под фару','бокавина','боковина']],
+    ['Стёкла', ['стекло','лобовое','форточка']],
+    ['Облицовка / Решётка', ['облицовка','решётка','радиатора','губа']],
+    ['Подкапотное / Кузов', ['подкапотн','пол','короб','усилитель','стапель','кузов','рамка лобов']],
+    ['Молдинги / Накладки', ['молдинг','накладка','молдинги','декор','эмблема','заглушка']],
+    ['Окраска спец.', ['антигравий','антикор','грунт','подбор','колористик','шпаклёв']],
+    ['Салон / Разборка', ['салон','сиденье','сидений','салазк']],
+    ['Полировка', ['полировк']],
+    ['Плёнка', ['плёнк','плен','антигравийн']],
+    ['Прочее', []],
+  ];
+  // Clear existing
+  Object.keys(WORKS_CAT).forEach(k => delete WORKS_CAT[k]);
+  const assigned = new Set();
+  catMap.forEach(([cat, keys]) => {
+    WORKS_CATALOG.forEach(w => {
+      if(assigned.has(w.name)) return;
+      const low = w.name.toLowerCase();
+      const match = cat === 'Прочее' ? false : keys.some(k => low.includes(k));
+      if(match){
+        if(!WORKS_CAT[cat]) WORKS_CAT[cat] = [];
+        WORKS_CAT[cat].push(w.name);
+        assigned.add(w.name);
+      }
+    });
+  });
+  WORKS_CATALOG.forEach(w => {
+    if(!assigned.has(w.name)){
+      if(!WORKS_CAT['Прочее']) WORKS_CAT['Прочее'] = [];
+      WORKS_CAT['Прочее'].push(w.name);
+    }
+  });
+}
+
 
 // ══════════ DATA ══════════
 const RAW = [
@@ -1555,6 +1761,7 @@ function renderTable(){
       <td style="white-space:nowrap">
         <div class="row-actions">
           <button class="btn btn-outline btn-sm" onclick="openEditModal(${r.id})">✏️</button>
+          <button class="btn btn-sm" style="background:linear-gradient(135deg,#1a6bb5,#2980b9);color:#fff;font-size:11px" onclick="printInvoice(${r.id})" title="Выгрузить счёт на оплату">📄 Счёт</button>
           <button class="btn btn-red btn-sm" onclick="deleteRow(${r.id})">🗑</button>
         </div>
       </td>
@@ -1620,6 +1827,9 @@ function deleteRow(id){
 function buildWorksPicker(filter){
   filter=(filter||'').toLowerCase();
   const container=document.getElementById('works-picker-list');
+  // Build lookup map: name -> hours
+  const hoursMap = {};
+  WORKS_CATALOG.forEach(w => { hoursMap[w.name] = w.hours; });
   let html='';
   for(const [cat,items] of Object.entries(WORKS_CAT)){
     const filtered=items.filter(w=>!filter||w.toLowerCase().includes(filter));
@@ -1627,9 +1837,13 @@ function buildWorksPicker(filter){
     html+=`<div class="work-cat">${cat}</div>`;
     filtered.forEach(w=>{
       const sel=selectedWorks.includes(w);
-      html+=`<div class="work-item${sel?' selected':''}" onclick="toggleWork('${w.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')">
+      const hrs = hoursMap[w] || 0;
+      const hrsStr = hrs > 0 ? `<span style="color:var(--teal);font-family:'JetBrains Mono',monospace;font-size:11px;margin-left:auto;flex-shrink:0">${hrs}ч</span>` : '';
+      const safe = w.replace(/\/g,'\\').replace(/'/g,"\'");
+      html+=`<div class="work-item${sel?' selected':''}" onclick="toggleWork('${safe}')">
         <div class="wi-check">${sel?'✓':''}</div>
-        <span>${w}</span>
+        <span style="flex:1">${w}</span>
+        ${hrsStr}
       </div>`;
     });
   }
@@ -1677,7 +1891,7 @@ function renderWorksTags(){
 function openAddModal(){
   editId=null; selectedWorks=[];
   document.getElementById('modal-title').textContent='ДОБАВИТЬ АВТОМОБИЛЬ';
-  ['f-num','f-zn','f-car','f-intake','f-release','f-cost','f-price','f-note','f-works-custom','f-nh','f-mat'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['f-num','f-zn','f-car','f-intake','f-release','f-cost','f-price','f-note','f-works-custom','f-nh','f-mat','f-zakazchik'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   document.getElementById('f-status').value='В работе';
   document.getElementById('f-markup').value='1.35';
   document.getElementById('f-custom-coef-wrap').style.display='none';
@@ -1704,6 +1918,7 @@ function openEditModal(id){
   document.getElementById('f-price').value=r.цена||'';
   document.getElementById('f-status').value=r.статус||'В работе';
   document.getElementById('f-note').value=r.note||'';
+  const fzk=document.getElementById('f-zakazchik');if(fzk)fzk.value=r.заказчик||'';
   document.getElementById('f-markup').value='1.35';
   document.getElementById('f-custom-coef-wrap').style.display='none';
   document.getElementById('f-works-custom').value='';
@@ -1823,49 +2038,69 @@ function getWorkShare(work, allWorks){
   return totalShare / count;
 }
 
+function getWorkHours(workName){
+  const entry = WORKS_CATALOG.find(w => w.name === workName);
+  return entry ? entry.hours : 0;
+}
+
+function getHistAvgPrice(workName){
+  // Get average price for this specific work from history using distribution data
+  const withDist = db.filter(r => r.распределение && r.распределение.some(d => d.работа === workName));
+  if(withDist.length > 0){
+    const sum = withDist.reduce((s,r) => {
+      const entry = r.распределение.find(d => d.работа === workName);
+      return s + (entry ? entry.сумма : 0);
+    }, 0);
+    return { avg: Math.round(sum / withDist.length), cnt: withDist.length, source: 'dist' };
+  }
+  // Fallback: proportional from total orders containing this work
+  const hist = db.filter(r => {
+    const ws = (r.работы||'').split('\n').filter(Boolean);
+    return ws.includes(workName) && r.цена > 0;
+  });
+  if(hist.length > 0){
+    const totalHours = hist.reduce((s,r) => {
+      const ws = (r.работы||'').split('\n').filter(Boolean);
+      const totalH = ws.reduce((sh,w) => sh + getWorkHours(w), 0) || ws.length;
+      const myH = getWorkHours(workName) || 1;
+      return s + r.цена * myH / totalH;
+    }, 0);
+    return { avg: Math.round(totalHours / hist.length), cnt: hist.length, source: 'hist' };
+  }
+  return null;
+}
+
 function distributePrices(){
   const totalPrice = parseFloat(document.getElementById('f-price').value)||0;
   if(!totalPrice || !selectedWorks.length) return null;
   
   const n = selectedWorks.length;
   
-  // Get weights for each work from memory or history
+  // Get weights for each work: priority: learned memory > history > normhours > equal
   let weights = selectedWorks.map(w => {
-    // Check learned memory first
+    // 1. Learned memory (from manual corrections)
     const mem = workPriceMemory[w];
-    if(mem && mem.price > 0) return mem.price;
-    
-    // Check historical avg
-    const hist = db.filter(r => {
-      const ws = (r.работы||'').split('\n').filter(Boolean);
-      return ws.includes(w) && r.цена > 0;
-    });
-    if(hist.length > 0){
-      // Avg price per work in orders containing this work
-      const avg = hist.reduce((s,r) => {
-        const wc = (r.работы||'').split('\n').filter(Boolean).length || 1;
-        return s + r.цена / wc;
-      }, 0) / hist.length;
-      return avg;
-    }
-    return 1; // equal fallback
+    if(mem && mem.price > 0) return { w: mem.price, source: 'learned', cnt: mem.cnt };
+    // 2. Historical avg with distribution
+    const hist = getHistAvgPrice(w);
+    if(hist) return { w: hist.avg, source: hist.source, cnt: hist.cnt };
+    // 3. Normhours-based weight
+    const hrs = getWorkHours(w);
+    if(hrs > 0) return { w: hrs, source: 'hours', cnt: 0 };
+    // 4. Equal
+    return { w: 1, source: 'equal', cnt: 0 };
   });
   
-  const sumW = weights.reduce((a,b)=>a+b,0) || n;
-  const distributed = weights.map(w => Math.round(totalPrice * w / sumW));
+  const sumW = weights.reduce((a,b)=>a+b.w,0) || n;
+  const distributed = weights.map(wObj => Math.round(totalPrice * wObj.w / sumW));
   
-  // Fix rounding: make sure sum equals totalPrice
+  // Fix rounding
   const diff = totalPrice - distributed.reduce((a,b)=>a+b,0);
-  distributed[0] += diff;
+  if(distributed.length > 0) distributed[0] += diff;
   
-  // Count how many had real data
-  const withData = selectedWorks.filter(w => {
-    const mem = workPriceMemory[w];
-    if(mem && mem.price > 0) return true;
-    return db.some(r => (r.работы||'').split('\n').includes(w) && r.цена > 0);
-  }).length;
+  const withData = weights.filter(w => w.source !== 'equal').length;
   
-  return { amounts: distributed, withData, total: n };
+  return { amounts: distributed, weights, withData, total: n };
 }
 
 let currentDistribution = null; // stores {work, amount} for saving
@@ -1894,12 +2129,19 @@ function renderPriceDist(forceRecalc){
   
   const note = dist.withData > 0
     ? `📊 ${dist.withData} из ${dist.total} работ — данные из истории`
-    : '⚡ Равное распределение (нет данных)';
+    : '⏱️ Распределение по нормочасам';
   document.getElementById('price-dist-note').textContent = note;
   
-  document.getElementById('price-dist-content').innerHTML = currentDistribution.map((item,i) => `
-    <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
-      <span style="flex:1;font-size:13px;color:var(--gray200)">${item.work}</span>
+  document.getElementById('price-dist-content').innerHTML = currentDistribution.map((item,i) => {
+    const wObj = (dist.weights && dist.weights[i]) ? dist.weights[i] : {source:'equal',cnt:0};
+    const srcIcon = wObj.source==='learned' ? '💡' : wObj.source==='dist'||wObj.source==='hist' ? '📊' : wObj.source==='hours' ? '⏱️' : '⚡';
+    const srcHint = wObj.source==='learned' ? `Обучен (${wObj.cnt}×)` : wObj.source==='dist' ? `История (${wObj.cnt}×)` : wObj.source==='hist' ? `~История (${wObj.cnt}×)` : wObj.source==='hours' ? 'Норм/часы' : 'Равно';
+    const hrs = getWorkHours(item.work);
+    return `<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+      <div style="flex:1;min-width:0">
+        <span style="font-size:13px;color:var(--gray200);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.work}</span>
+        <span style="font-size:11px;color:var(--gray400)">${srcIcon} ${srcHint}${hrs > 0 ? ' · '+hrs+'ч' : ''}</span>
+      </div>
       <div style="display:flex;align-items:center;gap:6px">
         <input type="number"
           id="dist-${i}"
@@ -1912,7 +2154,8 @@ function renderPriceDist(forceRecalc){
           onblur="this.style.borderColor='rgba(255,255,255,0.12)'"
         > ₽
       </div>
-    </div>`).join('') + `
+    </div>`;
+  }).join('') + `
     <div style="display:flex;justify-content:space-between;padding:10px 0;font-weight:700;font-size:13px;margin-top:4px">
       <span style="color:var(--gray400)">Итого:</span>
       <span id="dist-total" style="color:var(--gold2);font-family:'JetBrains Mono',monospace">${totalPrice.toLocaleString('ru-RU')} ₽</span>
@@ -1975,6 +2218,8 @@ function modalAutoCalc(){
     document.getElementById('f-price').value=price||'';
   }
   _updateCalcPreview(cost, price, nh, mat, coef);
+  // trigger per-work price distribution
+  if((nh>0||mat>0) && selectedWorks.length>0) triggerPriceDist();
 }
 
 // Manual override of cost/price
@@ -2099,6 +2344,7 @@ function saveRecord(){
     цена:price,
     статус:document.getElementById('f-status').value,
     note:document.getElementById('f-note').value.trim(),
+    заказчик:document.getElementById('f-zakazchik').value.trim(),
   };
   rec.доход=rec.цена-rec.себест;
   rec.счет=['Счёт выставлен','Оплачен'].includes(rec.статус);
@@ -2149,60 +2395,6 @@ function saveRecord(){
     rec.распределение = currentDistribution.map(x=>({работа:x.work,сумма:x.amount}));
   }
   saveDB();renderTable();closeModal();showToast(editId?'Запись обновлена':'Автомобиль добавлен');
-}
-
-// ══════════ CALCULATOR ══════════
-document.getElementById('c-group').addEventListener('change',function(){
-  document.getElementById('custom-coef-wrap').style.display=this.value==='custom'?'block':'none';
-  calcUpdate();
-});
-function calcUpdate(){
-  const nh=parseFloat(document.getElementById('c-nh').value)||0;
-  const rate=parseFloat(document.getElementById('c-rate').value)||1000;
-  const mat=parseFloat(document.getElementById('c-mat').value)||0;
-  const gv=document.getElementById('c-group').value;
-  const coef=gv==='custom'?(parseFloat(document.getElementById('c-custom').value)||1.35):parseFloat(gv);
-  const matWithMarkup=mat*1.35;
-  const cost=nh*rate+matWithMarkup;
-  const price=Math.round(cost*coef);
-  const profit=price-cost;
-  const margin=price>0?profit/price:0;
-  document.getElementById('r-works').textContent=fmt(nh*rate);
-  document.getElementById('r-mat').textContent=fmt(mat);
-  document.getElementById('r-cost').textContent=fmt(cost);
-  document.getElementById('r-coef').textContent='×'+coef.toFixed(2);
-  document.getElementById('r-profit').textContent=fmt(profit);
-  document.getElementById('r-margin').textContent=price>0?fmtPct(margin):'—';
-  document.getElementById('r-price').textContent=price.toLocaleString('ru-RU')+' ₽';
-  const pl=document.getElementById('r-pline'),badge=document.getElementById('r-mbadge');
-  if(price>0){
-    pl.textContent='Прибыль: '+fmt(profit);pl.style.color=profit>0?'#2ecc71':'#e74c3c';
-    const mg=margin>=0.4?'high':margin>=0.25?'mid':'low';
-    badge.textContent=mg==='high'?'🟢 Высокая':mg==='mid'?'🟡 Средняя':'🔴 Низкая';
-    badge.style.background=mg==='high'?'rgba(46,204,113,0.15)':mg==='mid'?'rgba(200,150,12,0.15)':'rgba(231,76,60,0.15)';
-    badge.style.color=mg==='high'?'#2ecc71':mg==='mid'?'var(--gold2)':'#e74c3c';
-  } else {
-    pl.textContent='Введите данные';pl.style.color='var(--gray400)';
-    badge.textContent='—';badge.style.background='rgba(255,255,255,0.05)';badge.style.color='var(--gray400)';
-  }
-}
-
-// ══════════ PRICING ══════════
-function renderPricing(){
-  const margins=db.filter(r=>r.цена>0&&r.себест>0).map(r=>(r.цена-r.себест)/r.цена).sort((a,b)=>a-b);
-  const avg=margins.length?margins.reduce((a,b)=>a+b,0)/margins.length:null;
-  document.getElementById('stats-general').innerHTML=[
-    ['Всего авто',db.length+' авт.'],
-    ['Общая выручка',fmt(db.reduce((s,r)=>s+(r.цена||0),0))],
-    ['Общая себестоимость',fmt(db.reduce((s,r)=>s+(r.себест||0),0))],
-    ['Общая прибыль',fmt(db.reduce((s,r)=>s+calcD(r),0))],
-    ['Средняя маржа',avg!==null?fmtPct(avg):'—'],
-    ['Медианная маржа',margins.length?fmtPct(margins[Math.floor(margins.length/2)]):'—'],
-  ].map(([l,v])=>`<div class="stat-item"><span class="s-label">${l}</span><span class="s-val">${v}</span></div>`).join('');
-  const lo=margins.filter(m=>m<0.25).length,mi=margins.filter(m=>m>=0.25&&m<0.4).length,hi=margins.filter(m=>m>=0.4).length;
-  document.getElementById('stats-margins').innerHTML=[['🔴 Низкая (<25%)',lo,'#e74c3c'],['🟡 Средняя (25–40%)',mi,'var(--gold2)'],['🟢 Высокая (≥40%)',hi,'#2ecc71']].map(([l,c,col])=>`<div class="stat-item"><span class="s-label">${l}</span><span class="s-val" style="color:${col}">${c} авт.</span></div>`).join('');
-  const sc={};db.forEach(r=>{sc[r.статус]=(sc[r.статус]||0)+1;});
-  document.getElementById('stats-status').innerHTML=Object.entries(sc).sort((a,b)=>b[1]-a[1]).map(([s,c])=>`<div class="stat-item"><span class="s-label">${s}</span><span class="s-val">${c} авт.</span></div>`).join('');
 }
 
 // ══════════ DASHBOARD ══════════
@@ -2361,6 +2553,254 @@ function renderDashboard(){
   document.getElementById('bar-brands').innerHTML=ba.map(([b,v])=>`<div class="bar-item"><span class="bar-label">${b}</span><div class="bar-track"><div class="bar-fill" style="width:${(v/maxB*100).toFixed(1)}%;background:#5dade2"></div></div><span class="bar-val" style="color:#4ea8f5">${fmt(v)}</span></div>`).join('');
 }
 
+
+// ══════════════════════════════════════════════════════════════════
+// СЧЁТ НА ОПЛАТУ — генерация и печать
+// Реквизиты: ИП Потапова Татьяна Андреевна, ИНН 890413611233
+// ══════════════════════════════════════════════════════════════════
+
+function getNextInvoiceNumber(){
+  const n = parseInt(localStorage.getItem('rc_invoice_counter') || '0') + 1;
+  localStorage.setItem('rc_invoice_counter', n);
+  return n;
+}
+
+function rubles(n){
+  // Convert number to Russian words
+  const ones = ['','один','два','три','четыре','пять','шесть','семь','восемь','девять',
+                 'десять','одиннадцать','двенадцать','тринадцать','четырнадцать','пятнадцать',
+                 'шестнадцать','семнадцать','восемнадцать','девятнадцать'];
+  const tens = ['','','двадцать','тридцать','сорок','пятьдесят','шестьдесят','семьдесят','восемьдесят','девяносто'];
+  const hundreds = ['','сто','двести','триста','четыреста','пятьсот','шестьсот','семьсот','восемьсот','девятьсот'];
+  const thousands_ones = ['','одна','две','три','четыре','пять','шесть','семь','восемь','девять',
+                           'десять','одиннадцать','двенадцать','тринадцать','четырнадцать','пятнадцать',
+                           'шестнадцать','семнадцать','восемнадцать','девятнадцать'];
+  function group(num, isThousands){
+    if(num === 0) return '';
+    const h = Math.floor(num/100);
+    const rest = num % 100;
+    const t = Math.floor(rest/10);
+    const o = rest % 10;
+    let s = hundreds[h] ? hundreds[h]+' ' : '';
+    if(rest < 20){
+      s += (isThousands ? thousands_ones[rest] : ones[rest]) + (rest > 0 ? ' ' : '');
+    } else {
+      s += tens[t]+' ' + (isThousands ? thousands_ones[o] : ones[o]) + (o > 0 ? ' ' : '');
+    }
+    return s.trim();
+  }
+  function thousandsLabel(n){
+    if(n === 0) return '';
+    const last2 = n % 100, last1 = n % 10;
+    if(last2 >= 11 && last2 <= 19) return 'тысяч';
+    if(last1 === 1) return 'тысяча';
+    if(last1 >= 2 && last1 <= 4) return 'тысячи';
+    return 'тысяч';
+  }
+  function rublesLabel(n){
+    const last2 = n % 100, last1 = n % 10;
+    if(last2 >= 11 && last2 <= 19) return 'рублей';
+    if(last1 === 1) return 'рубль';
+    if(last1 >= 2 && last1 <= 4) return 'рубля';
+    return 'рублей';
+  }
+  const total = Math.round(n);
+  const thousands = Math.floor(total / 1000);
+  const remainder = total % 1000;
+  let result = '';
+  if(thousands > 0){
+    const millionsK = Math.floor(thousands/1000);
+    const thRest = thousands % 1000;
+    if(millionsK > 0){
+      result += group(millionsK, false) + ' миллион' + (millionsK===1?'':'ов') + ' ';
+    }
+    result += group(thRest, true) + ' ' + thousandsLabel(thousands) + ' ';
+  }
+  if(remainder > 0){
+    result += group(remainder, false);
+  } else if(thousands === 0){
+    result = 'ноль';
+  }
+  result = result.trim();
+  result = result.charAt(0).toUpperCase() + result.slice(1);
+  result += ' ' + rublesLabel(total) + ' 00 копеек';
+  return result;
+}
+
+function printInvoice(id){
+  const r = db.find(x => x.id === id);
+  if(!r){ showToast('Запись не найдена', true); return; }
+
+  const invoiceNum = getNextInvoiceNumber();
+  const today = new Date();
+  const dateStr = today.toLocaleDateString('ru-RU', {day:'numeric', month:'long', year:'numeric'});
+
+  // Get works with prices
+  const works = (r.работы || '').split('\n').filter(Boolean);
+  const dist = r.распределение && r.распределение.length ? r.распределение : null;
+
+  // Build rows
+  let rows = '';
+  let totalSum = 0;
+
+  if(dist && dist.length){
+    dist.forEach((item, i) => {
+      totalSum += item.сумма;
+      rows += `<tr>
+        <td style="padding:8px 12px;border:1px solid #ccc;text-align:center">${i+1}</td>
+        <td style="padding:8px 12px;border:1px solid #ccc">Техническое обслуживание и ремонт а/м по заказ-наряду № ${r.зн||'—'} от ${dateStr} авто ${r.авто||''} ${r.гос||''}<br><span style="color:#555;font-size:12px">${item.работа}</span></td>
+        <td style="padding:8px 12px;border:1px solid #ccc;text-align:center">усл</td>
+        <td style="padding:8px 12px;border:1px solid #ccc;text-align:right">1</td>
+        <td style="padding:8px 12px;border:1px solid #ccc;text-align:right">${item.сумма.toLocaleString('ru-RU', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+        <td style="padding:8px 12px;border:1px solid #ccc;text-align:right">${item.сумма.toLocaleString('ru-RU', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      </tr>`;
+    });
+  } else {
+    // Single row for the whole order
+    totalSum = r.цена || 0;
+    rows = `<tr>
+      <td style="padding:8px 12px;border:1px solid #ccc;text-align:center">1</td>
+      <td style="padding:8px 12px;border:1px solid #ccc">Техническое обслуживание и ремонт а/м по заказ-наряду № ${r.зн||'—'} от ${dateStr} авто ${r.авто||''} ${r.гос||''}${works.length ? '<br><span style="color:#555;font-size:12px">'+works.join(', ')+'</span>' : ''}</td>
+      <td style="padding:8px 12px;border:1px solid #ccc;text-align:center">усл</td>
+      <td style="padding:8px 12px;border:1px solid #ccc;text-align:right">1</td>
+      <td style="padding:8px 12px;border:1px solid #ccc;text-align:right">${totalSum.toLocaleString('ru-RU', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      <td style="padding:8px 12px;border:1px solid #ccc;text-align:right">${totalSum.toLocaleString('ru-RU', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+    </tr>`;
+  }
+
+  const totalFmt = totalSum.toLocaleString('ru-RU', {minimumFractionDigits:2, maximumFractionDigits:2});
+  const totalWords = rubles(totalSum);
+  const rowCount = dist ? dist.length : 1;
+
+  const invoiceHtml = `<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Счёт № ${invoiceNum} от ${dateStr}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 13px; color: #000; background: #fff; padding: 20px; }
+  .invoice-wrap { max-width: 900px; margin: 0 auto; }
+  .bank-info { display: flex; gap: 0; margin-bottom: 0; }
+  .bank-block { border: 1px solid #999; padding: 8px 12px; flex: 1; }
+  .bank-block + .bank-block { border-left: none; }
+  .bank-label { font-size: 11px; color: #666; margin-bottom: 4px; }
+  .bank-name { font-weight: bold; font-size: 13px; }
+  .bank-detail { font-size: 12px; }
+  .invoice-title { text-align: center; font-size: 18px; font-weight: bold; margin: 16px 0 12px; }
+  .parties { border: 1px solid #999; border-collapse: collapse; width: 100%; margin-bottom: 14px; }
+  .parties td { padding: 8px 12px; border: 1px solid #999; vertical-align: top; font-size: 12px; }
+  .parties td:first-child { width: 140px; font-weight: bold; color: #444; }
+  table.items { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+  table.items th { background: #f5f5f5; border: 1px solid #ccc; padding: 8px 12px; font-size: 12px; font-weight: bold; text-align: center; }
+  .totals { width: 100%; text-align: right; margin-bottom: 8px; }
+  .totals td { padding: 4px 12px; font-size: 13px; }
+  .totals .label { color: #444; }
+  .totals .val { font-weight: bold; min-width: 160px; }
+  .total-words { border: 1px solid #999; padding: 8px 14px; font-size: 13px; margin-bottom: 16px; }
+  .total-words strong { font-size: 14px; }
+  .sign-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 24px; }
+  .sign-block { display: flex; flex-direction: column; gap: 4px; font-size: 13px; }
+  .sign-line { border-bottom: 1px solid #000; min-width: 200px; display: inline-block; }
+  .no-print { text-align: center; margin-top: 20px; }
+  @media print { .no-print { display: none; } body { padding: 10px; } }
+</style>
+</head>
+<body>
+<div class="invoice-wrap">
+
+  <!-- Банковские реквизиты -->
+  <div class="bank-info">
+    <div class="bank-block" style="flex:2">
+      <div class="bank-label">Банк получателя</div>
+      <div class="bank-name">АО "АЛЬФА-БАНК" г. Москва</div>
+      <div class="bank-detail">БИК 044525593</div>
+    </div>
+    <div class="bank-block" style="flex:1">
+      <div class="bank-label">Сч. №</div>
+      <div class="bank-detail" style="font-weight:bold">30101810200000000593</div>
+    </div>
+    <div class="bank-block" style="flex:2">
+      <div class="bank-label">ИНН 890413611233</div>
+      <div class="bank-name">ИП Потапова Татьяна Андреевна</div>
+      <div class="bank-detail">Получатель</div>
+    </div>
+    <div class="bank-block" style="flex:1">
+      <div class="bank-label">Сч. №</div>
+      <div class="bank-detail" style="font-weight:bold">40802810302740006190</div>
+    </div>
+  </div>
+
+  <div class="invoice-title">Счёт на оплату № ${invoiceNum} от ${dateStr}</div>
+
+  <!-- Поставщик и покупатель -->
+  <table class="parties">
+    <tr>
+      <td>Поставщик<br>(Исполнитель):</td>
+      <td>ИП Потапова Т. А., ИНН 890413611233, 105187, Город Москва, вн.тер.г. муниципальный округ Измайлово, ул 1-я Измайловского Зверинца, д. 8</td>
+    </tr>
+    <tr>
+      <td>Покупатель<br>(Заказчик):</td>
+      <td>${r.заказчик || '&nbsp;'}</td>
+    </tr>
+    <tr>
+      <td>Основание:</td>
+      <td>Основной договор</td>
+    </tr>
+  </table>
+
+  <!-- Таблица работ -->
+  <table class="items">
+    <thead>
+      <tr>
+        <th style="width:40px">№</th>
+        <th>Товары (работы, услуги)</th>
+        <th style="width:50px">Ед.</th>
+        <th style="width:60px">Кол-во</th>
+        <th style="width:120px">Цена</th>
+        <th style="width:120px">Сумма</th>
+      </tr>
+    </thead>
+    <tbody>${rows}</tbody>
+  </table>
+
+  <!-- Итого -->
+  <table class="totals">
+    <tr><td class="label">Итого:</td><td class="val">${totalFmt}</td></tr>
+    <tr><td class="label">Без налога (НДС):</td><td class="val">-</td></tr>
+    <tr><td class="label" style="font-weight:bold;font-size:14px">Всего к оплате:</td><td class="val" style="font-size:15px">${totalFmt}</td></tr>
+  </table>
+
+  <div class="total-words">
+    Всего наименований ${rowCount}, на сумму ${totalFmt} руб.<br>
+    <strong>${totalWords}</strong>
+  </div>
+
+  <div class="sign-row">
+    <div class="sign-block">
+      <span>Предприниматель</span>
+      <span><span class="sign-line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> Потапова Т. А.</span>
+    </div>
+    <div class="sign-block">
+      <span>&nbsp;</span>
+      <span>&nbsp;</span>
+    </div>
+  </div>
+
+  <div class="no-print" style="margin-top:24px">
+    <button onclick="window.print()" style="padding:10px 28px;background:#1a6bb5;color:#fff;border:none;border-radius:6px;font-size:14px;cursor:pointer;font-weight:bold">🖨️ Распечатать счёт</button>
+    <button onclick="window.close()" style="padding:10px 20px;background:#999;color:#fff;border:none;border-radius:6px;font-size:14px;cursor:pointer;margin-left:10px">✕ Закрыть</button>
+  </div>
+
+</div>
+</body>
+</html>`;
+
+  const win = window.open('', '_blank', 'width=960,height=800');
+  win.document.write(invoiceHtml);
+  win.document.close();
+}
+
 function showToast(msg,isError=false){
   const t=document.getElementById('toast');
   t.textContent=msg;t.className='toast'+(isError?' error':'');
@@ -2407,13 +2847,40 @@ let fbRef = null;
 async function initFirebase(){
   if(!FIREBASE_ENABLED) return;
   try {
-    // Dynamically load Firebase SDK
     await loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js');
     await loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js');
     firebase.initializeApp(FIREBASE_CONFIG);
     fbDB = firebase.database();
     fbRef = fbDB.ref('royal_cars/db');
-    // Listen for changes from other users
+
+    // ── Справочник работ из Firebase ─────────────────────────────
+    const catalogRef = fbDB.ref('royal_cars/works_catalog');
+    catalogRef.once('value', snap => {
+      const data = snap.val();
+      if(data && Array.isArray(data) && data.length > 0){
+        // Firebase has catalog — use it (overrides built-in)
+        window.WORKS_CATALOG = data;
+        rebuildWorksCat();
+        console.log(`Справочник загружен из Firebase: ${data.length} работ`);
+      } else {
+        // First run — upload built-in catalog to Firebase
+        catalogRef.set(WORKS_CATALOG).then(() => {
+          console.log(`Справочник загружен в Firebase: ${WORKS_CATALOG.length} работ`);
+        });
+      }
+    });
+
+    // Listen for catalog updates (if someone updates it in Firebase Console)
+    catalogRef.on('value', snap => {
+      const data = snap.val();
+      if(data && Array.isArray(data) && data.length > 0){
+        window.WORKS_CATALOG = data;
+        rebuildWorksCat();
+      }
+    });
+    // ─────────────────────────────────────────────────────────────
+
+    // Listen for DB changes from other users
     fbRef.on('value', snap => {
       const data = snap.val();
       if(data){
@@ -2424,12 +2891,14 @@ async function initFirebase(){
         showToast('🔄 Данные синхронизированы');
       }
     });
+
     // Load users from Firebase
     const usersRef = fbDB.ref('royal_cars/users');
     usersRef.once('value', snap => {
       const u = snap.val();
       if(u) firebaseUsers = u;
     });
+
     document.getElementById('sync-status').textContent = '🟢 Firebase подключён';
     document.getElementById('sync-status').style.color = '#2ecc71';
     console.log('Firebase connected');
