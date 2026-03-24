@@ -771,6 +771,28 @@
     .filter-input.wide { min-width: 140px; }
     .deadline-grid { flex-wrap: wrap; gap: 6px; }
   }
+
+  /* ══ КОНТРОЛЬ СРОКОВ ══ */
+  .sl-status-badge { display:inline-flex;align-items:center;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap }
+  .sl-s-overdue { background:rgba(231,76,60,0.12);color:#ff6b5b;border:1px solid rgba(231,76,60,0.3) }
+  .sl-s-today   { background:rgba(0,196,122,0.12);color:#00f5c4;border:1px solid rgba(0,196,122,0.25) }
+  .sl-s-soon    { background:rgba(245,166,35,0.12);color:#f5a623;border:1px solid rgba(245,166,35,0.25) }
+  .sl-s-future  { background:rgba(78,168,245,0.10);color:#4ea8f5;border:1px solid rgba(78,168,245,0.2) }
+  .sl-s-issued  { background:rgba(0,196,122,0.08);color:#2ecc71;border:1px solid rgba(0,196,122,0.2) }
+  .sl-s-nodate  { background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.08) }
+  .sl-s-shifted { background:rgba(245,166,35,0.08);color:#e67e22;border:1px solid rgba(245,166,35,0.2) }
+  .sl-shift-entry { padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px }
+  .sl-shift-entry:last-child { border-bottom:none }
+  .sl-shift-arrow { color:#e74c3c;font-weight:700;margin:0 6px }
+  .sl-shift-reason { color:var(--gray200);margin-top:3px;font-size:12px }
+  .sl-shift-meta { color:var(--gray400);font-size:11px;margin-top:2px }
+  .sl-comment-entry { padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px }
+  .sl-comment-entry:last-child { border-bottom:none }
+  .sl-comment-meta { color:var(--gray400);font-size:11px;margin-top:3px }
+  .sl-overdue-item { display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(231,76,60,0.12);font-size:13px;gap:8px;flex-wrap:wrap }
+  .sl-overdue-item:last-child { border-bottom:none }
+  .sl-shifts-count { display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;background:rgba(245,166,35,0.12);color:#f5a623 }
+  .sl-shifts-count.zero { background:rgba(255,255,255,0.04);color:var(--gray400) }
 </style>
 </head>
 <body>
@@ -814,6 +836,7 @@
     <nav class="nav-tabs">
       <button class="nav-tab active" onclick="showPage('учет',this)">📋 Учёт авто</button>
       <button class="nav-tab" onclick="showPage('дашборд',this)">📈 Дашборд</button>
+      <button class="nav-tab" onclick="showPage('сроки',this)">📅 Контроль сроков</button>
     </nav>
     <div class="header-stats">
       <div>Авто: <span id="h-total">0</span></div>
@@ -942,6 +965,135 @@
     <div class="chart-card"><h4>ТОП-10 ПО ПРИБЫЛИ</h4><div class="bar-chart" id="bar-top"></div></div>
     <div class="chart-card"><h4>ТОП-10 ПО МАРЖЕ</h4><div class="bar-chart" id="bar-margin"></div></div>
     <div class="chart-card"><h4>ПРИБЫЛЬ ПО МАРКАМ</h4><div class="bar-chart" id="bar-brands"></div></div>
+  </div>
+</div>
+
+
+<!-- ══════════════ КОНТРОЛЬ СРОКОВ ══════════════ -->
+<div class="page" id="page-сроки">
+
+  <!-- KPI cards -->
+  <div class="kpi-grid" style="margin-bottom:20px">
+    <div class="kpi-card gold"><div class="kpi-label">Всего в работе</div><div class="kpi-value gold" id="sl-total">—</div><div class="kpi-sub">автомобилей</div></div>
+    <div class="kpi-card red" style="--kpi-color:#e74c3c"><div class="kpi-label">Просрочено</div><div class="kpi-value" style="color:#e74c3c" id="sl-overdue">—</div><div class="kpi-sub">срок прошёл</div></div>
+    <div class="kpi-card" style="border-color:rgba(245,166,35,0.2)"><div class="kpi-label">Перенесено</div><div class="kpi-value" style="color:#f5a623" id="sl-shifted">—</div><div class="kpi-sub">были переносы</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Выдано</div><div class="kpi-value green" id="sl-issued">—</div><div class="kpi-sub">в этом месяце</div></div>
+  </div>
+
+  <!-- Overdue alert -->
+  <div id="sl-overdue-block" style="display:none;background:rgba(231,76,60,0.08);border:1px solid rgba(231,76,60,0.3);border-radius:12px;padding:16px 20px;margin-bottom:20px">
+    <div style="font-size:14px;font-weight:700;color:#e74c3c;margin-bottom:12px">⚠️ Просроченные автомобили</div>
+    <div id="sl-overdue-list"></div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="section-header">
+    <div class="section-title">ГРАФИК ВЫДАЧИ АВТОМОБИЛЕЙ</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <input type="text" class="filter-input" id="sl-search" placeholder="🔍 Поиск..." style="width:220px" oninput="slFilter()">
+      <select class="filter-input" id="sl-status-filter" onchange="slFilter()">
+        <option value="">Все</option>
+        <option value="overdue">Просрочено</option>
+        <option value="today">Сегодня</option>
+        <option value="soon">Скоро (3 дня)</option>
+        <option value="shifted">Были переносы</option>
+        <option value="no-date">Без даты</option>
+        <option value="issued">Выдано</option>
+      </select>
+      <button class="btn btn-gold" onclick="slOpenAdd()">+ Добавить авто</button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table id="sl-table">
+      <thead><tr>
+        <th onclick="slSort('status')" style="cursor:pointer">Статус</th>
+        <th onclick="slSort('order')" style="cursor:pointer">Заказ / Гос. номер</th>
+        <th onclick="slSort('model')" style="cursor:pointer">Авто / Клиент</th>
+        <th onclick="slSort('intake')" style="cursor:pointer">Приёмка</th>
+        <th onclick="slSort('releaseDate')" style="cursor:pointer">Дата выдачи</th>
+        <th>Переносов</th>
+        <th>Последний комментарий</th>
+        <th></th>
+      </tr></thead>
+      <tbody id="sl-tbody"></tbody>
+    </table>
+  </div>
+  <div id="sl-empty" class="empty-state" style="display:none"><div class="big">📅</div>Нет автомобилей</div>
+
+</div>
+
+<!-- ══ MODAL: КАРТОЧКА СРОКА ══ -->
+<div class="overlay" id="sl-modal-overlay">
+  <div class="modal" style="width:720px;max-width:96vw">
+    <div class="modal-header">
+      <div class="modal-title" id="sl-modal-title">КАРТОЧКА АВТО</div>
+      <button class="modal-close" onclick="slCloseModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Основная инфо -->
+      <div class="form-grid">
+        <div class="form-group"><label>Гос. номер</label><input type="text" id="sl-f-plate" placeholder="А123ВС77"></div>
+        <div class="form-group"><label>Заказ-наряд (З/Н)</label><input type="text" id="sl-f-order" placeholder="29500"></div>
+        <div class="form-group full"><label>Марка / Модель</label><input type="text" id="sl-f-model" placeholder="BMW 530d"></div>
+        <div class="form-group full"><label>Клиент</label><input type="text" id="sl-f-client" placeholder="Иванов Иван Иванович"></div>
+        <div class="form-group"><label>Дата приёмки</label><input type="date" id="sl-f-intake"></div>
+        <div class="form-group">
+          <label>Статус</label>
+          <select id="sl-f-status">
+            <option value="В работе">В работе</option>
+            <option value="Ожидание запчастей">Ожидание запчастей</option>
+            <option value="Согласование">Согласование</option>
+            <option value="Выдан">Выдан</option>
+            <option value="Отменён">Отменён</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Комментарий мастера</label><input type="text" id="sl-f-master-note" placeholder="Текущий статус работ..."></div>
+      </div>
+
+      <!-- Плановая дата выдачи с историей переносов -->
+      <div style="background:rgba(231,76,60,0.06);border:1px solid rgba(231,76,60,0.2);border-radius:12px;padding:16px;margin-bottom:16px">
+        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gold2);margin-bottom:12px">📅 Дата выдачи</div>
+        <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;margin-bottom:12px">
+          <div class="form-group" style="margin:0;flex:1;min-width:160px">
+            <label>Текущая плановая дата</label>
+            <input type="date" id="sl-f-release-date" style="width:100%">
+          </div>
+          <div class="form-group" style="margin:0;flex:2;min-width:200px">
+            <label>Причина переноса <span style="color:var(--gray400);font-weight:400">(обязательно при изменении даты)</span></label>
+            <input type="text" id="sl-f-shift-reason" placeholder="Ждём деталь / не согласована смета / другое...">
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="slApplyDateShift()" style="flex-shrink:0;height:38px">Применить перенос</button>
+        </div>
+
+        <!-- История переносов -->
+        <div id="sl-shift-history" style="max-height:200px;overflow-y:auto"></div>
+      </div>
+
+      <!-- История комментариев -->
+      <div style="margin-bottom:16px">
+        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.4);margin-bottom:8px">💬 История комментариев</div>
+        <div id="sl-comments-history" style="max-height:180px;overflow-y:auto;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:12px"></div>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <input type="text" id="sl-new-comment" class="filter-input" style="flex:1" placeholder="Добавить комментарий...">
+          <select id="sl-comment-author" class="filter-input" style="width:150px">
+            <option>Мастер</option>
+            <option>Приёмщик</option>
+            <option>Менеджер</option>
+            <option>Директор</option>
+          </select>
+          <button class="btn btn-outline btn-sm" onclick="slAddComment()">Добавить</button>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;justify-content:flex-end">
+        <button class="btn btn-outline" onclick="slCloseModal()">Отмена</button>
+        <button class="btn btn-outline" id="sl-issue-btn" onclick="slToggleIssued()" style="border-color:#00c47a;color:#00c47a">✓ Выдан</button>
+        <button class="btn btn-gold" onclick="slSaveRecord()">💾 Сохранить</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1636,6 +1788,7 @@ function showPage(id,btn){
   btn.classList.add('active');
   if(id==='дашборд') renderDashboard();
   if(id==='наценки') renderPricing();
+  if(id==='сроки') slRenderAll();
   updateHeader();
 }
 
@@ -2853,6 +3006,15 @@ async function initFirebase(){
     firebase.initializeApp(FIREBASE_CONFIG);
     fbDB = firebase.database();
     fbRef = fbDB.ref('royal_cars/db');
+    slFbRef = fbDB.ref('royal_cars/schedule');
+    slFbRef.on('value', snap => {
+      const data = snap.val();
+      if(data){
+        slDb = Array.isArray(data) ? data : Object.values(data);
+        localStorage.setItem('sl_db', JSON.stringify(slDb));
+        if(document.getElementById('page-сроки').classList.contains('active')) slRenderAll();
+      }
+    });
 
     // ── Справочник работ из Firebase ─────────────────────────────
     const catalogRef = fbDB.ref('royal_cars/works_catalog');
@@ -3110,6 +3272,300 @@ checkAuth();
 renderTable();
 updateHeader();
 calcUpdate();
+
+
+// ══════════════════════════════════════════════════════════════════
+// КОНТРОЛЬ СРОКОВ — Schedule/Deadline module
+// Хранится в Firebase: royal_cars/schedule
+// Каждая запись: { id, plate, order, model, client, intake,
+//   releaseDate, status, masterNote, issued, issuedAt,
+//   dateHistory: [{from,to,reason,author,ts}],
+//   comments: [{text,author,ts}] }
+// ══════════════════════════════════════════════════════════════════
+
+let slFbRef = null;
+let slDb = JSON.parse(localStorage.getItem('sl_db')||'[]');
+let slEditingId = null;
+let slSortCol = null, slSortDir = 1;
+
+function slSaveDb(){
+  localStorage.setItem('sl_db', JSON.stringify(slDb));
+  if(FIREBASE_ENABLED && slFbRef){
+    slFbRef.set(slDb).catch(e=>console.error('SL Firebase write error:',e));
+  }
+}
+
+function slToday(){const d=new Date();d.setHours(0,0,0,0);return d;}
+function slParseDate(s){if(!s)return null;const p=s.split('-');if(p.length===3){const d=new Date(+p[0],+p[1]-1,+p[2]);d.setHours(0,0,0,0);return d;}return null;}
+function slFmt(s){if(!s)return'—';const d=slParseDate(s);return d?d.toLocaleDateString('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric'}):'—';}
+function slDaysDiff(s){const d=slParseDate(s);if(!d)return null;return Math.round((d-slToday())/86400000);}
+function slNow(){const n=new Date();return n.toLocaleDateString('ru-RU')+' '+n.toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});}
+
+function slGetStatus(c){
+  if(c.issued) return 'issued';
+  if(!c.releaseDate) return 'no-date';
+  const diff=slDaysDiff(c.releaseDate);
+  if(diff<0) return 'overdue';
+  if(diff===0) return 'today';
+  if(diff<=3) return 'soon';
+  return 'future';
+}
+
+function slStatusBadge(c){
+  const s=slGetStatus(c);
+  if(s==='issued') return '<span class="sl-status-badge sl-s-issued">✅ Выдан</span>';
+  if(s==='no-date') return '<span class="sl-status-badge sl-s-nodate">Нет даты</span>';
+  const diff=slDaysDiff(c.releaseDate);
+  if(s==='overdue') return`<span class="sl-status-badge sl-s-overdue">🔴 Просрочено ${Math.abs(diff)}д.</span>`;
+  if(s==='today') return'<span class="sl-status-badge sl-s-today">🟢 Сегодня</span>';
+  if(s==='soon') return`<span class="sl-status-badge sl-s-soon">🟡 Через ${diff}д.</span>`;
+  return`<span class="sl-status-badge sl-s-future">🔵 Через ${diff}д.</span>`;
+}
+
+function slRenderAll(){
+  slRenderStats();
+  slRenderOverdueBlock();
+  slRenderTable();
+}
+
+function slRenderStats(){
+  const today=slToday();
+  const total=slDb.filter(c=>!c.issued).length;
+  const overdue=slDb.filter(c=>slGetStatus(c)==='overdue').length;
+  const shifted=slDb.filter(c=>(c.dateHistory||[]).length>0&&!c.issued).length;
+  const curMonth=today.getMonth(),curYear=today.getFullYear();
+  const issued=slDb.filter(c=>{if(!c.issuedAt)return false;const d=slParseDate(c.issuedAt);return d&&d.getMonth()===curMonth&&d.getFullYear()===curYear;}).length;
+  const el=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  el('sl-total',total); el('sl-overdue',overdue); el('sl-shifted',shifted); el('sl-issued',issued);
+}
+
+function slRenderOverdueBlock(){
+  const od=slDb.filter(c=>slGetStatus(c)==='overdue');
+  const block=document.getElementById('sl-overdue-block');
+  const list=document.getElementById('sl-overdue-list');
+  if(!block||!list) return;
+  if(!od.length){block.style.display='none';return;}
+  block.style.display='block';
+  list.innerHTML=od.sort((a,b)=>(a.releaseDate||'').localeCompare(b.releaseDate||'')).map(c=>`
+    <div class="sl-overdue-item">
+      <div>
+        <b>${c.model||'—'}</b> <span style="color:var(--gray400)">${c.client||''}</span>
+        <span class="badge badge-red" style="margin-left:6px;font-size:10px">${Math.abs(slDaysDiff(c.releaseDate))} дн.</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold2)">${c.plate||'—'}</span>
+        <span style="font-size:12px;color:var(--gray400)">план: ${slFmt(c.releaseDate)}</span>
+        ${(c.dateHistory||[]).length?`<span class="sl-shifts-count">🔄 ${c.dateHistory.length} перен.</span>`:''}
+        <button class="btn btn-outline btn-sm" onclick="slOpenModal(${c.id});event.stopPropagation()">Комментировать</button>
+      </div>
+    </div>`).join('');
+}
+
+function slGetFiltered(){
+  const q=(document.getElementById('sl-search')?.value||'').toLowerCase();
+  const sf=document.getElementById('sl-status-filter')?.value||'';
+  return slDb.filter(c=>{
+    const mq=!q||[c.plate,c.model,c.client,c.order].some(x=>(x||'').toLowerCase().includes(q));
+    const s=slGetStatus(c);
+    let ms=true;
+    if(sf==='overdue') ms=s==='overdue';
+    else if(sf==='today') ms=s==='today';
+    else if(sf==='soon') ms=s==='soon'||s==='today';
+    else if(sf==='shifted') ms=(c.dateHistory||[]).length>0&&!c.issued;
+    else if(sf==='no-date') ms=s==='no-date';
+    else if(sf==='issued') ms=c.issued;
+    return mq&&ms;
+  });
+}
+
+function slSort(col){
+  if(slSortCol===col) slSortDir*=-1; else{slSortCol=col;slSortDir=1;}
+  slRenderTable();
+}
+
+function slGetSortVal(c,col){
+  if(col==='status'){const o={overdue:0,today:1,soon:2,future:3,'no-date':4,issued:5};return o[slGetStatus(c)]??9;}
+  if(col==='releaseDate') return c.releaseDate||'zzzz';
+  if(col==='intake') return c.intake||'';
+  if(col==='order') return c.order||'';
+  if(col==='model') return (c.model||'').toLowerCase();
+  return '';
+}
+
+function slRenderTable(){
+  const tbody=document.getElementById('sl-tbody');
+  const empty=document.getElementById('sl-empty');
+  if(!tbody) return;
+  let rows=slGetFiltered();
+  if(slSortCol) rows=[...rows].sort((a,b)=>{const av=slGetSortVal(a,slSortCol),bv=slGetSortVal(b,slSortCol);return av<bv?-slSortDir:av>bv?slSortDir:0;});
+  else{const ord={overdue:0,today:1,soon:2,future:3,'no-date':4,issued:5};rows=[...rows].sort((a,b)=>(ord[slGetStatus(a)]??9)-(ord[slGetStatus(b)]??9));}
+  if(!rows.length){tbody.innerHTML='';if(empty)empty.style.display='block';return;}
+  if(empty)empty.style.display='none';
+  tbody.innerHTML=rows.map(c=>{
+    const shifts=(c.dateHistory||[]).length;
+    const lastCmt=c.comments&&c.comments.length?c.comments[c.comments.length-1]:null;
+    return`<tr style="${c.issued?'opacity:0.5':''}cursor:pointer" onclick="slOpenModal(${c.id})">
+      <td>${slStatusBadge(c)}</td>
+      <td>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold2)">${c.plate||'—'}</div>
+        <div style="font-size:11px;color:var(--gray400)">${c.order||'—'}</div>
+      </td>
+      <td>
+        <div style="font-weight:600">${c.model||'—'}</div>
+        <div style="font-size:12px;color:var(--gray400)">${c.client||''}</div>
+      </td>
+      <td style="font-size:13px;color:var(--gray400)">${slFmt(c.intake)}</td>
+      <td>
+        <div style="font-weight:700;color:${slGetStatus(c)==='overdue'?'#ff6b5b':slGetStatus(c)==='today'?'#00f5c4':'var(--off-white)'}">${slFmt(c.releaseDate)}</div>
+        ${c.releaseDate&&slDaysDiff(c.releaseDate)!==null?`<div style="font-size:11px;color:var(--gray400)">${slDaysDiff(c.releaseDate)<0?Math.abs(slDaysDiff(c.releaseDate))+' дн. назад':slDaysDiff(c.releaseDate)===0?'сегодня':'через '+slDaysDiff(c.releaseDate)+' дн.'}</div>`:''}
+      </td>
+      <td><span class="sl-shifts-count ${shifts===0?'zero':''}" title="${shifts?'Было '+shifts+' переносов':'Без переносов'}">🔄 ${shifts}</span></td>
+      <td style="max-width:200px">
+        ${lastCmt?`<div style="font-size:12px;color:var(--gray200);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${lastCmt.text}</div><div style="font-size:11px;color:var(--gray400)">${lastCmt.author} · ${lastCmt.ts}</div>`:'<span style="color:var(--gray400);font-size:12px">—</span>'}
+      </td>
+      <td><button class="btn btn-outline btn-sm" onclick="slOpenModal(${c.id});event.stopPropagation()">✏️</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function slOpenAdd(){
+  const nid=Math.max(...slDb.map(c=>c.id),0)+1;
+  const rec={id:nid,plate:'',order:'',model:'',client:'',intake:'',releaseDate:'',status:'В работе',masterNote:'',issued:false,issuedAt:'',dateHistory:[],comments:[]};
+  slDb.push(rec);
+  slSaveDb();
+  slOpenModal(nid);
+}
+
+function slOpenModal(id){
+  const c=slDb.find(x=>x.id===id);if(!c)return;
+  slEditingId=id;
+  document.getElementById('sl-modal-title').textContent=(c.model||'Новое авто')+(c.plate?' — '+c.plate:'');
+  document.getElementById('sl-f-plate').value=c.plate||'';
+  document.getElementById('sl-f-order').value=c.order||'';
+  document.getElementById('sl-f-model').value=c.model||'';
+  document.getElementById('sl-f-client').value=c.client||'';
+  document.getElementById('sl-f-intake').value=c.intake||'';
+  document.getElementById('sl-f-release-date').value=c.releaseDate||'';
+  document.getElementById('sl-f-status').value=c.status||'В работе';
+  document.getElementById('sl-f-master-note').value=c.masterNote||'';
+  document.getElementById('sl-f-shift-reason').value='';
+  document.getElementById('sl-new-comment').value='';
+  const issBtn=document.getElementById('sl-issue-btn');
+  if(c.issued){issBtn.textContent='↩ Снять выдачу';issBtn.style.color='#2ecc71';issBtn.style.borderColor='#2ecc71';}
+  else{issBtn.textContent='✓ Выдан';issBtn.style.color='#00c47a';issBtn.style.borderColor='#00c47a';}
+  slRenderShiftHistory(c);
+  slRenderComments(c);
+  document.getElementById('sl-modal-overlay').classList.add('open');
+}
+
+function slRenderShiftHistory(c){
+  const el=document.getElementById('sl-shift-history');if(!el)return;
+  const hist=c.dateHistory||[];
+  if(!hist.length){
+    el.innerHTML='<div style="color:var(--gray400);font-size:12px;padding:4px 0">История переносов пуста</div>';return;
+  }
+  el.innerHTML=[...hist].reverse().map((h,i)=>`
+    <div class="sl-shift-entry">
+      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <span style="font-size:12px;color:var(--gray400)">${slFmt(h.from)||'не была задана'}</span>
+        <span class="sl-shift-arrow">→</span>
+        <span style="font-size:13px;font-weight:600;color:var(--off-white)">${slFmt(h.to)}</span>
+        ${i===0?'<span style="font-size:10px;background:rgba(231,76,60,0.12);color:#ff6b5b;padding:2px 6px;border-radius:4px;font-weight:600">Текущая</span>':''}
+      </div>
+      <div class="sl-shift-reason">💬 ${h.reason||'Причина не указана'}</div>
+      <div class="sl-shift-meta">${h.author||'Мастер'} · ${h.ts}</div>
+    </div>`).join('');
+}
+
+function slRenderComments(c){
+  const el=document.getElementById('sl-comments-history');if(!el)return;
+  const cmts=c.comments||[];
+  if(!cmts.length){el.innerHTML='<div style="color:var(--gray400);font-size:12px">Нет комментариев</div>';return;}
+  el.innerHTML=[...cmts].reverse().map(cm=>`
+    <div class="sl-comment-entry">
+      <div>${cm.text}</div>
+      <div class="sl-comment-meta">${cm.author} · ${cm.ts}</div>
+    </div>`).join('');
+}
+
+function slApplyDateShift(){
+  if(!slEditingId) return;
+  const c=slDb.find(x=>x.id===slEditingId);if(!c)return;
+  const newDate=document.getElementById('sl-f-release-date').value;
+  const reason=document.getElementById('sl-f-shift-reason').value.trim();
+  if(!newDate){showToast('Укажите новую дату',true);return;}
+  if(!reason){showToast('Укажите причину переноса',true);return;}
+  if(newDate===c.releaseDate){showToast('Дата не изменилась',true);return;}
+  const author=document.getElementById('sl-comment-author')?.value||'Мастер';
+  if(!c.dateHistory)c.dateHistory=[];
+  c.dateHistory.push({from:c.releaseDate||'',to:newDate,reason:reason,author:author,ts:slNow()});
+  c.releaseDate=newDate;
+  document.getElementById('sl-f-shift-reason').value='';
+  slRenderShiftHistory(c);
+  slSaveDb();
+  showToast('Перенос даты сохранён ✓');
+}
+
+function slAddComment(){
+  if(!slEditingId) return;
+  const c=slDb.find(x=>x.id===slEditingId);if(!c)return;
+  const txt=document.getElementById('sl-new-comment').value.trim();
+  if(!txt){showToast('Введите комментарий',true);return;}
+  const author=document.getElementById('sl-comment-author')?.value||'Мастер';
+  if(!c.comments)c.comments=[];
+  c.comments.push({text:txt,author:author,ts:slNow()});
+  document.getElementById('sl-new-comment').value='';
+  slRenderComments(c);
+  slSaveDb();
+  showToast('Комментарий добавлен');
+}
+
+function slToggleIssued(){
+  if(!slEditingId) return;
+  const c=slDb.find(x=>x.id===slEditingId);if(!c)return;
+  c.issued=!c.issued;
+  c.issuedAt=c.issued?new Date().toISOString().split('T')[0]:'';
+  if(c.issued){
+    if(!c.comments)c.comments=[];
+    c.comments.push({text:'Автомобиль выдан клиенту.',author:'Система',ts:slNow()});
+  }
+  const issBtn=document.getElementById('sl-issue-btn');
+  if(c.issued){issBtn.textContent='↩ Снять выдачу';issBtn.style.color='#2ecc71';issBtn.style.borderColor='#2ecc71';}
+  else{issBtn.textContent='✓ Выдан';issBtn.style.color='#00c47a';issBtn.style.borderColor='#00c47a';}
+  slRenderComments(c);
+  slSaveDb();
+  showToast(c.issued?'Автомобиль выдан ✓':'Выдача отменена');
+}
+
+function slSaveRecord(){
+  if(!slEditingId) return;
+  const c=slDb.find(x=>x.id===slEditingId);if(!c)return;
+  c.plate=document.getElementById('sl-f-plate').value.trim();
+  c.order=document.getElementById('sl-f-order').value.trim();
+  c.model=document.getElementById('sl-f-model').value.trim();
+  c.client=document.getElementById('sl-f-client').value.trim();
+  c.intake=document.getElementById('sl-f-intake').value;
+  c.status=document.getElementById('sl-f-status').value;
+  c.masterNote=document.getElementById('sl-f-master-note').value.trim();
+  // If date changed but no shift history yet - just set it (first time)
+  const newDate=document.getElementById('sl-f-release-date').value;
+  if(newDate!==c.releaseDate&&!(c.dateHistory||[]).length){c.releaseDate=newDate;}
+  if(!c.model){showToast('Укажите марку/модель',true);return;}
+  slSaveDb();
+  slCloseModal();
+  slRenderAll();
+  showToast('Запись сохранена ✓');
+}
+
+function slCloseModal(){
+  document.getElementById('sl-modal-overlay')?.classList.remove('open');
+  slEditingId=null;
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('sl-modal-overlay')?.addEventListener('click',function(e){if(e.target===this)slCloseModal();});
+});
+
 </script>
 </body>
 </html>
