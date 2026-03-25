@@ -1634,6 +1634,50 @@ const WORKS_CATALOG = [
   {"name":"Окрас дверного проема","hours":5.0}
 ];
 
+// ── Категории справочника работ ────────────────────────────────────
+let WORKS_CAT = {};
+function rebuildWorksCat(){
+  WORKS_CAT = {};
+  const catMap = [
+    ['Бамперы',      ['бампер','накладка бампера','спойлер','юбка бампера']],
+    ['Крылья',       ['крыло','брызговик','подкрылок']],
+    ['Капот',        ['капот','воздухозаборник','петли капота']],
+    ['Крыша',        ['крыша','люк','рейлинг','релинг','молдинги крыши']],
+    ['Двери',        ['дверь','дверная','петля двери','стекло передней','стекло задней']],
+    ['Пороги',       ['порог','накладка порога','облицовка порога','накладка порог']],
+    ['Стойки',       ['стойка','рамка лобового']],
+    ['Кузов целый',  ['кузов.','кузов ']],
+    ['Лонжероны',    ['лонжерон']],
+    ['Арки',         ['арка']],
+    ['Задняя часть', ['задняя панель','крышка багажника','багажник','пол багажника','задняя дверь 5']],
+    ['Зеркала',      ['зеркало']],
+    ['Фары / Фонари',['фара','фонарь','птф','указатель поворота','повторитель','габаритный']],
+    ['Стёкла',       ['стекло','лобовое','молдинг лобового']],
+    ['Решётка',      ['решетка радиатора','передняя панель','планка под фару','планка под капот']],
+    ['Салон',        ['салон','сидение','сиденье','консоль','приборная','ремень безопасности','жабо','полка']],
+    ['Кузовной ремонт',['стапель','перекос','антигравий','герметик','арка задн','арка внутр']],
+    ['Прочее',       []],
+  ];
+  const used = new Set();
+  catMap.forEach(([cat, keys]) => {
+    const items = WORKS_CATALOG
+      .map(w => w.name)
+      .filter(name => {
+        const low = name.toLowerCase();
+        return keys.some(k => low.includes(k));
+      });
+    if(items.length || cat === 'Прочее') WORKS_CAT[cat] = items;
+    items.forEach(n => used.add(n));
+  });
+  // Прочее — всё что не попало
+  WORKS_CAT['Прочее'] = WORKS_CATALOG.map(w=>w.name).filter(n=>!used.has(n));
+  if(!WORKS_CAT['Прочее'].length) delete WORKS_CAT['Прочее'];
+}
+// Строим сразу при загрузке страницы
+rebuildWorksCat();
+
+
+
 let db = JSON.parse(localStorage.getItem('rc_db3')||'null');
 if(!db) { db=RAW.map((r,i)=>({...r,id:Date.now()+i,доход:(r.цена||0)-(r.себест||0)})); saveDB(); }
 let editId=null, sortField=null, sortDir=1, hidePaid=false, activePeriod='month', selectedWorks=[];
@@ -1841,6 +1885,10 @@ function deleteRow(id){
 
 // ══════════ WORKS PICKER ══════════
 function buildWorksPicker(filter){
+  // Защита: если WORKS_CAT не определён или пустой — строим категории из WORKS_CATALOG
+  if(typeof WORKS_CAT === 'undefined' || !Object.keys(WORKS_CAT).length){
+    rebuildWorksCat();
+  }
   filter=(filter||'').toLowerCase();
   const container=document.getElementById('works-picker-list');
   // Build lookup map: name -> hours
