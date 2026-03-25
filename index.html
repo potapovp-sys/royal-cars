@@ -1100,6 +1100,64 @@
   </div>
 </div>
 
+<!-- ══ IMPORT 1C MODAL ══════════════════════════════════════════════ -->
+<div class="overlay" id="import1c-overlay" style="z-index:3000">
+  <div class="modal" style="width:600px;max-width:96vw">
+    <div class="modal-header">
+      <div class="modal-title">📷 ЗАГРУЗКА ИЗ СКРИНШОТА 1С</div>
+      <button class="modal-close" onclick="closeImport1C()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Step 1: drop zone -->
+      <div id="imp1c-s1">
+        <div id="imp1c-dropzone" style="border:2px dashed rgba(255,255,255,0.15);border-radius:12px;padding:48px 32px;text-align:center;cursor:pointer;position:relative;transition:all 0.2s" onclick="document.getElementById('imp1c-file').click()" ondragover="event.preventDefault();this.style.borderColor='#00c47a'" ondragleave="this.style.borderColor='rgba(255,255,255,0.15)'" ondrop="imp1cHandleDrop(event)">
+          <input type="file" id="imp1c-file" accept="image/*" style="display:none" onchange="imp1cHandleFile(this.files[0])">
+          <div style="font-size:48px;margin-bottom:12px">📷</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:6px">Перетащите скриншот заказ-наряда из 1С</div>
+          <div style="font-size:13px;color:var(--gray400)">или нажмите чтобы выбрать файл · JPG, PNG, скриншот экрана</div>
+          <div style="margin-top:16px;padding:10px 14px;background:rgba(0,196,122,0.06);border:1px solid rgba(0,196,122,0.2);border-radius:8px;font-size:12px;color:#00c47a;text-align:left">
+            <b>Что распознаётся:</b> список работ с нормочасами → группировка по деталям → итоговые нормочасы по каждой группе
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: processing -->
+      <div id="imp1c-s2" style="display:none;text-align:center;padding:32px">
+        <img id="imp1c-preview" style="max-width:100%;max-height:220px;border-radius:8px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.1)" src="" alt="">
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;font-size:14px">
+          <div style="width:18px;height:18px;border:2px solid rgba(0,196,122,0.3);border-top-color:#00c47a;border-radius:50%;animation:spin 0.8s linear infinite"></div>
+          ИИ распознаёт заказ-наряд и группирует работы...
+        </div>
+      </div>
+
+      <!-- Step 3: results -->
+      <div id="imp1c-s3" style="display:none">
+        <img id="imp1c-preview2" style="max-width:100%;max-height:160px;border-radius:8px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.1);object-fit:contain" src="" alt="">
+        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.4);margin-bottom:10px">Распознанные работы — сгруппированы по деталям</div>
+        <div id="imp1c-result-list" style="max-height:280px;overflow-y:auto"></div>
+        <div style="margin-top:14px;padding:10px 14px;background:rgba(0,196,122,0.08);border:1px solid rgba(0,196,122,0.25);border-radius:8px;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:13px;color:var(--gray400)">Итого нормочасов:</div>
+          <div id="imp1c-total-nh" style="font-size:20px;font-weight:700;color:#00c47a;font-family:'JetBrains Mono',monospace">0 нч</div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
+          <button class="btn btn-outline" onclick="imp1cReset()">← Другой скриншот</button>
+          <button class="btn btn-gold" onclick="imp1cApply()">✓ Применить к карточке</button>
+        </div>
+      </div>
+
+      <!-- Step 4: error -->
+      <div id="imp1c-serr" style="display:none;padding:16px">
+        <div id="imp1c-errmsg" style="color:#ff6b5b;font-size:13px;background:rgba(231,76,60,0.08);border:1px solid rgba(231,76,60,0.25);border-radius:8px;padding:12px"></div>
+        <div style="text-align:center;margin-top:14px">
+          <button class="btn btn-outline" onclick="imp1cReset()">← Попробовать снова</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 </div><!-- /main -->
 
 <!-- ══════════════ MODAL ══════════════ -->
@@ -1107,7 +1165,10 @@
   <div class="modal">
     <div class="modal-header">
       <div class="modal-title" id="modal-title">ДОБАВИТЬ АВТОМОБИЛЬ</div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="btn btn-outline btn-sm" onclick="openImport1C()" title="Загрузить из скриншота 1С" style="font-size:12px;padding:5px 10px;border-color:rgba(0,196,122,0.4);color:#00c47a">📷 Из 1С</button>
+        <button class="modal-close" onclick="closeModal()">✕</button>
+      </div>
     </div>
     <div class="modal-body">
       <div class="form-grid">
@@ -3728,6 +3789,201 @@ function slCloseModal(){
 document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('sl-modal-overlay')?.addEventListener('click',function(e){if(e.target===this)slCloseModal();});
 });
+
+// ══════════════════════════════════════════════════════════════════
+// ИМПОРТ ИЗ СКРИНШОТА ЗАКАЗ-НАРЯДА 1С
+// Распознаёт работы → группирует по деталям → считает нормочасы
+// ══════════════════════════════════════════════════════════════════
+
+let imp1cDataUrl = null;
+let imp1cParsed  = [];   // [{group, ops, totalNh}]
+
+function openImport1C(){
+  imp1cReset();
+  document.getElementById('import1c-overlay').classList.add('open');
+}
+function closeImport1C(){
+  document.getElementById('import1c-overlay').classList.remove('open');
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('import1c-overlay')?.addEventListener('click', e=>{
+    if(e.target === document.getElementById('import1c-overlay')) closeImport1C();
+  });
+});
+
+function imp1cHandleDrop(e){
+  e.preventDefault();
+  document.getElementById('imp1c-dropzone').style.borderColor='rgba(255,255,255,0.15)';
+  const f = e.dataTransfer.files[0];
+  if(f) imp1cHandleFile(f);
+}
+
+function imp1cHandleFile(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    imp1cDataUrl = e.target.result;
+    const base64 = imp1cDataUrl.split(',')[1];
+    const mime   = file.type || 'image/png';
+
+    // Show step 2
+    document.getElementById('imp1c-s1').style.display = 'none';
+    document.getElementById('imp1c-s2').style.display = 'block';
+    document.getElementById('imp1c-preview').src = imp1cDataUrl;
+
+    try {
+      await imp1cAnalyze(base64, mime);
+    } catch(err){
+      document.getElementById('imp1c-s2').style.display = 'none';
+      document.getElementById('imp1c-serr').style.display = 'block';
+      document.getElementById('imp1c-errmsg').textContent = 'Ошибка: ' + (err.message || 'Не удалось распознать скриншот');
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function imp1cReset(){
+  ['imp1c-s1','imp1c-s2','imp1c-s3','imp1c-serr'].forEach((id,i)=>{
+    document.getElementById(id).style.display = i===0?'block':'none';
+  });
+  document.getElementById('imp1c-file').value = '';
+  imp1cDataUrl = null;
+  imp1cParsed = [];
+}
+
+async function imp1cAnalyze(base64, mime){
+  const prompt = `Ты помощник автосервиса. На скриншоте — заказ-наряд из 1С:Предприятие (конфигурация ДАЛИОН АвтоБизнес).
+
+Твоя задача:
+1. Найди таблицу работ (столбцы: Работа / Содержание, н/ч или кол-во).
+2. Извлеки каждую строку: название работы и количество нормочасов (н/ч).
+3. ПРОПУСТИ строки "Расходные материалы" — они не считаются.
+4. Сгруппируй работы по детали. Деталь — это часть названия ДО операции.
+
+Правила определения детали и операции:
+- Разделитель между деталью и операцией: точка, запятая, пробел перед словами С/у, Р/с, Окраска, Ремонт, Замена, Установка, Демонтаж, Снятие
+- Примеры:
+  "Бампер передний. С/у." → деталь: "Бампер передний", операция: "С/у"
+  "Бампер передний. Окраска." → деталь: "Бампер передний", операция: "Окраска"
+  "Накладка заднего крыла. Ремонт." → деталь: "Накладка заднего крыла", операция: "Ремонт"
+  "Работы по окраске" → деталь: "Работы по окраске", операция: "Окраска"
+
+5. Для каждой группы определи тип итоговой работы:
+- Есть "Окраска" И есть "Ремонт" (или "Ремонт маляр") → тип: "Ремонт + Окрас"
+- Есть только "Окраска" → тип: "Окрас"
+- Есть только "Ремонт" → тип: "Ремонт"
+- Замена → тип: "Замена"
+- С/у и Р/с — это вспомогательные операции, они входят в группу но НЕ меняют тип
+- Если ничего из вышеперечисленного — тип: название как есть
+
+6. Суммируй нормочасы внутри каждой группы.
+
+Верни ТОЛЬКО JSON массив, без пояснений и markdown:
+[
+  {
+    "group": "Бампер передний",
+    "type": "Ремонт + Окрас",
+    "totalNh": 15,
+    "operations": [
+      {"name": "С/у", "nh": 2},
+      {"name": "Р/с", "nh": 2},
+      {"name": "Ремонт маляр", "nh": 3},
+      {"name": "Окраска", "nh": 8}
+    ]
+  }
+]`;
+
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2000,
+      messages: [{
+        role: 'user',
+        content: [
+          {type:'image', source:{type:'base64', media_type:mime, data:base64}},
+          {type:'text', text:prompt}
+        ]
+      }]
+    })
+  });
+
+  if(!resp.ok){
+    const e = await resp.json().catch(()=>({}));
+    throw new Error(e.error?.message || 'API error ' + resp.status);
+  }
+
+  const data = await resp.json();
+  const text = data.content.map(b=>b.text||'').join('');
+  const clean = text.replace(/```json|```/g,'').trim();
+
+  let parsed;
+  try { parsed = JSON.parse(clean); }
+  catch(e){ throw new Error('ИИ вернул некорректный формат. Попробуйте другой скриншот.'); }
+  if(!Array.isArray(parsed) || !parsed.length) throw new Error('Работы не найдены на скриншоте.');
+
+  imp1cParsed = parsed;
+  imp1cShowResults();
+}
+
+function imp1cShowResults(){
+  document.getElementById('imp1c-s2').style.display = 'none';
+  document.getElementById('imp1c-s3').style.display = 'block';
+  document.getElementById('imp1c-preview2').src = imp1cDataUrl;
+
+  let totalNh = 0;
+  const list = document.getElementById('imp1c-result-list');
+
+  list.innerHTML = imp1cParsed.map(g => {
+    totalNh += (g.totalNh || 0);
+    const opsHtml = (g.operations||[]).map(o =>
+      `<span style="font-size:11px;color:var(--gray400);background:rgba(255,255,255,0.04);padding:2px 6px;border-radius:4px;margin:1px">${o.name} ${o.nh}нч</span>`
+    ).join(' ');
+
+    const typeColor = g.type?.includes('Окрас') ? '#f5a623'
+                    : g.type?.includes('Замен') ? '#3d9cf5'
+                    : g.type?.includes('Ремонт') ? '#e74c3c'
+                    : 'var(--gray400)';
+
+    return `<div style="display:flex;align-items:flex-start;justify-content:space-between;padding:10px 12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;margin-bottom:6px;gap:12px">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:700;font-size:13px;margin-bottom:4px">
+          ${g.group}
+          <span style="font-size:11px;font-weight:600;color:${typeColor};margin-left:6px;background:rgba(255,255,255,0.05);padding:1px 7px;border-radius:10px">${g.type||''}</span>
+        </div>
+        <div>${opsHtml}</div>
+      </div>
+      <div style="font-size:18px;font-weight:700;color:#00c47a;font-family:'JetBrains Mono',monospace;white-space:nowrap;flex-shrink:0">${g.totalNh} нч</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('imp1c-total-nh').textContent = totalNh + ' нч';
+}
+
+function imp1cApply(){
+  if(!imp1cParsed.length) return;
+
+  // Build works list for the card
+  const works = imp1cParsed.map(g => `${g.group} — ${g.type}`);
+  const totalNh = imp1cParsed.reduce((s,g) => s + (g.totalNh||0), 0);
+
+  // Fill selectedWorks and nh field
+  selectedWorks = works;
+  renderWorksTags();
+
+  // Set normhours
+  const nhField = document.getElementById('f-nh');
+  if(nhField){ nhField.value = totalNh; }
+
+  // Update calc preview
+  modalAutoCalc();
+
+  // Close import modal
+  closeImport1C();
+
+  showToast('✓ Загружено из 1С: ' + works.length + ' групп работ, ' + totalNh + ' нч');
+}
 
 </script>
 </body>
