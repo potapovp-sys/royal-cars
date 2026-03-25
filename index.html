@@ -1013,6 +1013,7 @@
         <th onclick="slSort('order')" style="cursor:pointer">Заказ / Гос. номер</th>
         <th onclick="slSort('model')" style="cursor:pointer">Авто / Клиент</th>
         <th onclick="slSort('intake')" style="cursor:pointer">Приёмка</th>
+        <th>Задолженность</th>
         <th onclick="slSort('releaseDate')" style="cursor:pointer">Дата выдачи</th>
         <th>Переносов</th>
         <th>Последний комментарий</th>
@@ -1041,6 +1042,7 @@
         <div class="form-group full"><label>Марка / Модель</label><input type="text" id="sl-f-model" placeholder="BMW 530d"></div>
         <div class="form-group full"><label>Клиент</label><input type="text" id="sl-f-client" placeholder="Иванов Иван Иванович"></div>
         <div class="form-group"><label>Дата приёмки</label><input type="date" id="sl-f-intake"></div>
+        <div class="form-group"><label>Задолженность (₽)</label><input type="text" id="sl-f-debt" placeholder="0" style="font-family:'JetBrains Mono',monospace"></div>
         <div class="form-group">
           <label>Статус</label>
           <select id="sl-f-status">
@@ -3140,9 +3142,29 @@ async function initFirebase(){
     slFbRef.on('value', snap => {
       const data = snap.val();
       if(data){
-        const arr = Array.isArray(data) ? data : Object.values(data);
-        if(arr.length > 0){
-          slDb = arr;
+        const incoming = Array.isArray(data) ? data : Object.values(data);
+        if(incoming.length > 0){
+          // MERGE: при обновлении из Firebase сохраняем рабочие данные
+          if(slDb && slDb.length){
+            const existMap = {};
+            slDb.forEach(c => { if(c.order) existMap[c.order] = c; });
+            slDb = incoming.map(c => {
+              const ex = existMap[c.order];
+              if(ex){
+                // Обновляем поля из 1С, сохраняем даты/историю/комментарии/суммы
+                return Object.assign({}, ex, {
+                  model:  c.model  || ex.model,
+                  client: c.client || ex.client,
+                  plate:  c.plate  || ex.plate,
+                  intake: c.intake || ex.intake,
+                  debt:   c.debt   || ex.debt,
+                });
+              }
+              return c;
+            });
+          } else {
+            slDb = incoming;
+          }
           localStorage.setItem('sl_db', JSON.stringify(slDb));
           if(document.getElementById('page-сроки').classList.contains('active')) slRenderAll();
         }
@@ -3553,6 +3575,7 @@ function slRenderTable(){
         <div style="font-size:12px;color:var(--gray400)">${c.client||''}</div>
       </td>
       <td style="font-size:13px;color:var(--gray400)">${slFmt(c.intake)}</td>
+      <td style="font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--gold2)">${c.debt?c.debt+' ₽':'—'}</td>
       <td>
         <div style="font-weight:700;color:${slGetStatus(c)==='overdue'?'#ff6b5b':slGetStatus(c)==='today'?'#00f5c4':'var(--off-white)'}">${slFmt(c.releaseDate)}</div>
         ${c.releaseDate&&slDaysDiff(c.releaseDate)!==null?`<div style="font-size:11px;color:var(--gray400)">${slDaysDiff(c.releaseDate)<0?Math.abs(slDaysDiff(c.releaseDate))+' дн. назад':slDaysDiff(c.releaseDate)===0?'сегодня':'через '+slDaysDiff(c.releaseDate)+' дн.'}</div>`:''}
@@ -3586,6 +3609,7 @@ function slOpenModal(id){
   document.getElementById('sl-f-release-date').value=c.releaseDate||'';
   document.getElementById('sl-f-status').value=c.status||'В работе';
   document.getElementById('sl-f-master-note').value=c.masterNote||'';
+  const slDebtEl=document.getElementById('sl-f-debt');if(slDebtEl)slDebtEl.value=c.debt||'';
   document.getElementById('sl-f-shift-reason').value='';
   document.getElementById('sl-new-comment').value='';
   const issBtn=document.getElementById('sl-issue-btn');
@@ -3679,6 +3703,7 @@ function slSaveRecord(){
   if(!slEditingId) return;
   const c=slDb.find(x=>x.id===slEditingId);if(!c)return;
   c.plate=document.getElementById('sl-f-plate').value.trim();
+  const slDebtSave=document.getElementById('sl-f-debt');if(slDebtSave)c.debt=slDebtSave.value.trim();
   c.order=document.getElementById('sl-f-order').value.trim();
   c.model=document.getElementById('sl-f-model').value.trim();
   c.client=document.getElementById('sl-f-client').value.trim();
