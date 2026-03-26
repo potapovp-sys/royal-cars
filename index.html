@@ -2918,63 +2918,6 @@ function printInvoice(id){
   </div>
 
 </div>
-<!-- ══ IMPORT 1C MODAL ══════════════════════════════════════════════ -->
-<div class="overlay" id="import1c-overlay" style="z-index:99999!important">
-  <div class="modal" style="width:600px;max-width:96vw;position:relative;z-index:100000">
-    <div class="modal-header">
-      <div class="modal-title">📷 ЗАГРУЗКА ИЗ СКРИНШОТА 1С</div>
-      <button class="modal-close" onclick="closeImport1C()">✕</button>
-    </div>
-    <div class="modal-body">
-
-      <!-- Step 1: drop zone -->
-      <div id="imp1c-s1">
-        <div id="imp1c-dropzone" style="border:2px dashed rgba(255,255,255,0.15);border-radius:12px;padding:48px 32px;text-align:center;cursor:pointer;position:relative;transition:all 0.2s" onclick="document.getElementById('imp1c-file').click()" ondragover="event.preventDefault();this.style.borderColor='#00c47a'" ondragleave="this.style.borderColor='rgba(255,255,255,0.15)'" ondrop="imp1cHandleDrop(event)">
-          <input type="file" id="imp1c-file" accept="image/*" style="display:none" onchange="imp1cHandleFile(this.files[0])">
-          <div style="font-size:48px;margin-bottom:12px">📷</div>
-          <div style="font-size:16px;font-weight:700;margin-bottom:6px">Перетащите скриншот заказ-наряда из 1С</div>
-          <div style="font-size:13px;color:var(--gray400)">или нажмите чтобы выбрать файл · JPG, PNG, скриншот экрана</div>
-          <div style="margin-top:16px;padding:10px 14px;background:rgba(0,196,122,0.06);border:1px solid rgba(0,196,122,0.2);border-radius:8px;font-size:12px;color:#00c47a;text-align:left">
-            <b>Что распознаётся:</b> список работ с нормочасами → группировка по деталям → итоговые нормочасы по каждой группе
-          </div>
-        </div>
-      </div>
-
-      <!-- Step 2: processing -->
-      <div id="imp1c-s2" style="display:none;text-align:center;padding:32px">
-        <img id="imp1c-preview" style="max-width:100%;max-height:220px;border-radius:8px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.1)" src="" alt="">
-        <div style="display:flex;align-items:center;justify-content:center;gap:10px;font-size:14px">
-          <div style="width:18px;height:18px;border:2px solid rgba(0,196,122,0.3);border-top-color:#00c47a;border-radius:50%;animation:spin 0.8s linear infinite"></div>
-          ИИ распознаёт заказ-наряд и группирует работы...
-        </div>
-      </div>
-
-      <!-- Step 3: results -->
-      <div id="imp1c-s3" style="display:none">
-        <img id="imp1c-preview2" style="max-width:100%;max-height:160px;border-radius:8px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.1);object-fit:contain" src="" alt="">
-        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.4);margin-bottom:10px">Распознанные работы — сгруппированы по деталям</div>
-        <div id="imp1c-result-list" style="max-height:280px;overflow-y:auto"></div>
-        <div style="margin-top:14px;padding:10px 14px;background:rgba(0,196,122,0.08);border:1px solid rgba(0,196,122,0.25);border-radius:8px;display:flex;align-items:center;justify-content:space-between">
-          <div style="font-size:13px;color:var(--gray400)">Итого нормочасов:</div>
-          <div id="imp1c-total-nh" style="font-size:20px;font-weight:700;color:#00c47a;font-family:'JetBrains Mono',monospace">0 нч</div>
-        </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
-          <button class="btn btn-outline" onclick="imp1cReset()">← Другой скриншот</button>
-          <button class="btn btn-gold" onclick="imp1cApply()">✓ Применить к карточке</button>
-        </div>
-      </div>
-
-      <!-- Step 4: error -->
-      <div id="imp1c-serr" style="display:none;padding:16px">
-        <div id="imp1c-errmsg" style="color:#ff6b5b;font-size:13px;background:rgba(231,76,60,0.08);border:1px solid rgba(231,76,60,0.25);border-radius:8px;padding:12px"></div>
-        <div style="text-align:center;margin-top:14px">
-          <button class="btn btn-outline" onclick="imp1cReset()">← Попробовать снова</button>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div>
 
 </body>
 </html>`;
@@ -4080,5 +4023,64 @@ function imp1cApply(){
 }
 
 </script>
+
+
+<!-- ══ IMPORT 1C MODAL ══════════════════════════════════════════════ -->
+<div class="overlay" id="import1c-overlay" style="z-index:99999!important">
+  <div class="modal" style="width:600px;max-width:96vw;position:relative;z-index:100000">
+    <div class="modal-header">
+      <div class="modal-title">📷 ЗАГРУЗКА ИЗ СКРИНШОТА 1С</div>
+      <button class="modal-close" onclick="closeImport1C()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <!-- Step 1: drop zone -->
+      <div id="imp1c-s1">
+        <div id="imp1c-dropzone" style="border:2px dashed rgba(255,255,255,0.15);border-radius:12px;padding:48px 32px;text-align:center;cursor:pointer;position:relative;transition:all 0.2s" onclick="document.getElementById('imp1c-file').click()" ondragover="event.preventDefault();this.style.borderColor='#00c47a'" ondragleave="this.style.borderColor='rgba(255,255,255,0.15)'" ondrop="imp1cHandleDrop(event)">
+          <input type="file" id="imp1c-file" accept="image/*" style="display:none" onchange="imp1cHandleFile(this.files[0])">
+          <div style="font-size:48px;margin-bottom:12px">📷</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:6px">Перетащите скриншот заказ-наряда из 1С</div>
+          <div style="font-size:13px;color:var(--gray400)">или нажмите чтобы выбрать файл · JPG, PNG, скриншот экрана</div>
+          <div style="margin-top:16px;padding:10px 14px;background:rgba(0,196,122,0.06);border:1px solid rgba(0,196,122,0.2);border-radius:8px;font-size:12px;color:#00c47a;text-align:left">
+            <b>Что распознаётся:</b> список работ с нормочасами → группировка по деталям → итоговые нормочасы по каждой группе
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2: processing -->
+      <div id="imp1c-s2" style="display:none;text-align:center;padding:32px">
+        <img id="imp1c-preview" style="max-width:100%;max-height:220px;border-radius:8px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.1)" src="" alt="">
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;font-size:14px">
+          <div style="width:18px;height:18px;border:2px solid rgba(0,196,122,0.3);border-top-color:#00c47a;border-radius:50%;animation:spin 0.8s linear infinite"></div>
+          ИИ распознаёт заказ-наряд и группирует работы...
+        </div>
+      </div>
+
+      <!-- Step 3: results -->
+      <div id="imp1c-s3" style="display:none">
+        <img id="imp1c-preview2" style="max-width:100%;max-height:160px;border-radius:8px;margin-bottom:16px;border:1px solid rgba(255,255,255,0.1);object-fit:contain" src="" alt="">
+        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.4);margin-bottom:10px">Распознанные работы — сгруппированы по деталям</div>
+        <div id="imp1c-result-list" style="max-height:280px;overflow-y:auto"></div>
+        <div style="margin-top:14px;padding:10px 14px;background:rgba(0,196,122,0.08);border:1px solid rgba(0,196,122,0.25);border-radius:8px;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:13px;color:var(--gray400)">Итого нормочасов:</div>
+          <div id="imp1c-total-nh" style="font-size:20px;font-weight:700;color:#00c47a;font-family:'JetBrains Mono',monospace">0 нч</div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
+          <button class="btn btn-outline" onclick="imp1cReset()">← Другой скриншот</button>
+          <button class="btn btn-gold" onclick="imp1cApply()">✓ Применить к карточке</button>
+        </div>
+      </div>
+
+      <!-- Step 4: error -->
+      <div id="imp1c-serr" style="display:none;padding:16px">
+        <div id="imp1c-errmsg" style="color:#ff6b5b;font-size:13px;background:rgba(231,76,60,0.08);border:1px solid rgba(231,76,60,0.25);border-radius:8px;padding:12px"></div>
+        <div style="text-align:center;margin-top:14px">
+          <button class="btn btn-outline" onclick="imp1cReset()">← Попробовать снова</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 </body>
 </html>
