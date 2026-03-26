@@ -796,49 +796,46 @@
   .sl-shifts-count { display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:600;background:rgba(245,166,35,0.12);color:#f5a623 }
   .sl-shifts-count.zero { background:rgba(255,255,255,0.04);color:var(--gray400) }
   /* ── ТОРГОВЫЙ ТЕРМИНАЛ: подсветка строк по срокам ─────────────── */
-  @keyframes rc-pulse-red  { 0%,100%{background:rgba(255,20,20,0.22)!important}50%{background:rgba(255,20,20,0.40)!important} }
-  @keyframes rc-pulse-gold { 0%,100%{background:rgba(255,155,0,0.20)!important}50%{background:rgba(255,155,0,0.38)!important} }
+  /* ВАЖНО: анимация на TR, td = transparent — иначе !important на td блокирует keyframes */
+  @keyframes rc-pulse-red  { 0%,100%{background-color:rgba(255,20,20,0.30)} 50%{background-color:rgba(255,20,20,0.70)} }
+  @keyframes rc-pulse-gold { 0%,100%{background-color:rgba(255,155,0,0.25)} 50%{background-color:rgba(255,155,0,0.62)} }
 
-  /* 🔴 ПРОСРОЧЕНО — красная полоса + пульс */
-  tbody tr.row-overdue td {
-    animation: rc-pulse-red 1.0s ease-in-out infinite !important;
-    border-bottom: 1px solid rgba(255,30,30,0.35) !important;
-  }
+  /* 🔴 ПРОСРОЧЕНО */
+  tbody tr.row-overdue { animation: rc-pulse-red 1.0s ease-in-out infinite !important; }
+  tbody tr.row-overdue td { background-color: transparent !important; border-top:1px solid rgba(255,40,40,0.45)!important; border-bottom:1px solid rgba(255,40,40,0.45)!important; }
   tbody tr.row-overdue td:first-child { border-left: 8px solid #ff0000 !important; }
-  tbody tr.row-overdue .car-num { background: #ff0000 !important; color: #fff !important; border: none !important; font-weight: 900 !important; letter-spacing: 1px; }
-  tbody tr.row-overdue:hover td { animation: none !important; background: rgba(255,20,20,0.50) !important; }
+  tbody tr.row-overdue .car-num { background:#ff0000!important; color:#fff!important; border:none!important; font-weight:900!important; }
+  tbody tr.row-overdue:hover { animation:none!important; background-color:rgba(255,20,20,0.55)!important; }
 
-  /* 🟡 СЕГОДНЯ — золотая полоса + пульс */
-  tbody tr.row-today td {
-    animation: rc-pulse-gold 1.4s ease-in-out infinite !important;
-    border-bottom: 1px solid rgba(255,155,0,0.35) !important;
-  }
+  /* 🟡 СЕГОДНЯ */
+  tbody tr.row-today { animation: rc-pulse-gold 1.4s ease-in-out infinite !important; }
+  tbody tr.row-today td { background-color: transparent !important; border-top:1px solid rgba(255,155,0,0.40)!important; border-bottom:1px solid rgba(255,155,0,0.40)!important; }
   tbody tr.row-today td:first-child { border-left: 8px solid #ffaa00 !important; }
-  tbody tr.row-today .car-num { background: #ff9900 !important; color: #fff !important; border: none !important; font-weight: 900 !important; }
-  tbody tr.row-today:hover td { animation: none !important; background: rgba(255,155,0,0.48) !important; }
+  tbody tr.row-today .car-num { background:#ff9900!important; color:#fff!important; border:none!important; font-weight:900!important; }
+  tbody tr.row-today:hover { animation:none!important; background-color:rgba(255,155,0,0.55)!important; }
 
   /* 🔵 СКОРО */
-  tbody tr.row-soon td {
-    background: rgba(0,80,255,0.22) !important;
-    border-bottom: 1px solid rgba(0,100,255,0.30) !important;
-  }
+  tbody tr.row-soon { background-color: rgba(0,80,255,0.30) !important; }
+  tbody tr.row-soon td { background-color: transparent !important; border-top:1px solid rgba(0,100,255,0.35)!important; border-bottom:1px solid rgba(0,100,255,0.35)!important; }
   tbody tr.row-soon td:first-child { border-left: 8px solid #0066ff !important; }
-  tbody tr.row-soon .car-num { background: #0055ee !important; color: #fff !important; border: none !important; font-weight: 900 !important; }
-  tbody tr.row-soon:hover td { background: rgba(0,80,255,0.38) !important; }
+  tbody tr.row-soon .car-num { background:#0055ee!important; color:#fff!important; border:none!important; font-weight:900!important; }
+  tbody tr.row-soon:hover { background-color: rgba(0,80,255,0.50) !important; }
 
   /* ⚪ В РАБОТЕ */
   tbody tr.row-inwork td:first-child { border-left: 4px solid rgba(255,255,255,0.15) !important; }
 
   /* ✅ ВЫДАНО */
-  tbody tr.row-done td { opacity: 0.22 !important; filter: grayscale(0.5) !important; }
+  tbody tr.row-done { opacity: 0.22 !important; filter: grayscale(0.5) !important; }
   tbody tr.row-done td:first-child { border-left: 4px solid rgba(0,196,122,0.35) !important; }
-  tbody tr.row-done:hover td { opacity: 0.55 !important; filter: none !important; }
+  tbody tr.row-done:hover { opacity: 0.6 !important; filter: none !important; }
 
   /* Expand строки */
-  tbody tr.expand-row.row-overdue td { animation: none !important; background: rgba(255,20,20,0.10) !important; border-left: 8px solid rgba(255,0,0,0.35) !important; }
-  tbody tr.expand-row.row-today   td { animation: none !important; background: rgba(255,155,0,0.10) !important; border-left: 8px solid rgba(255,170,0,0.35) !important; }
-  tbody tr.expand-row.row-soon    td { background: rgba(0,80,255,0.10) !important; border-left: 8px solid rgba(0,100,255,0.30) !important; }
-  tbody tr.expand-row.row-done    td { opacity: 0.22 !important; filter: grayscale(0.5) !important; }
+  tbody tr.expand-row.row-overdue { animation:none!important; background-color:rgba(255,20,20,0.12)!important; }
+  tbody tr.expand-row.row-overdue td { background-color:transparent!important; border-left:8px solid rgba(255,0,0,0.35)!important; }
+  tbody tr.expand-row.row-today { animation:none!important; background-color:rgba(255,155,0,0.10)!important; }
+  tbody tr.expand-row.row-today td { background-color:transparent!important; border-left:8px solid rgba(255,170,0,0.35)!important; }
+  tbody tr.expand-row.row-soon td { background-color:transparent!important; border-left:8px solid rgba(0,100,255,0.30)!important; }
+  tbody tr.expand-row.row-done { opacity:0.22!important; filter:grayscale(0.5)!important; }
 
 </style>
 </head>
@@ -3567,9 +3564,36 @@ let slEditingId = null;
 let slSortCol = null, slSortDir = 1;
 
 function slSaveDb(){
-  localStorage.setItem('sl_db', JSON.stringify(slDb));
+  // Sanitize: Firebase rejects undefined values
+  const cleanDb = slDb.map(c => ({
+    id:          c.id          ?? 0,
+    order:       c.order       || '',
+    plate:       c.plate       || '',
+    model:       c.model       || '',
+    client:      c.client      || '',
+    intake:      c.intake      || '',
+    releaseDate: c.releaseDate || '',
+    status:      c.status      || 'В работе',
+    masterNote:  c.masterNote  || '',
+    debt:        c.debt        || '',
+    issued:      c.issued      ? true : false,
+    issuedAt:    c.issuedAt    || '',
+    dateHistory: Array.isArray(c.dateHistory) ? c.dateHistory.map(h=>({
+      from:   h.from   || '',
+      to:     h.to     || '',
+      reason: h.reason || '',
+      author: h.author || '',
+      ts:     h.ts     || '',
+    })) : [],
+    comments: Array.isArray(c.comments) ? c.comments.map(cm=>({
+      text:   cm.text   || '',
+      author: cm.author || '',
+      ts:     cm.ts     || '',
+    })) : [],
+  }));
+  localStorage.setItem('sl_db', JSON.stringify(cleanDb));
   if(FIREBASE_ENABLED && slFbRef){
-    slFbRef.set(slDb).catch(e=>console.error('SL Firebase write error:',e));
+    slFbRef.set(cleanDb).catch(e=>console.error('SL Firebase write error:',e));
   }
 }
 
@@ -3682,11 +3706,13 @@ function slRenderTable(){
   tbody.innerHTML=rows.map(c=>{
     const shifts=(c.dateHistory||[]).length;
     const lastCmt=c.comments&&c.comments.length?c.comments[c.comments.length-1]:null;
-    return`<tr style="${c.issued?'opacity:0.5':''}cursor:pointer" onclick="slOpenModal(${c.id})">
+    const slDs = slGetStatus(c);
+    const slRowClass = slDs==='overdue'?'row-overdue':slDs==='today'?'row-today':slDs==='soon'?'row-soon':slDs==='issued'?'row-done':'row-inwork';
+    return`<tr class="${slRowClass}" style="cursor:pointer" onclick="slOpenModal(${c.id})">
       <td>${slStatusBadge(c)}</td>
       <td>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--gold2)">${c.plate||'—'}</div>
-        <div style="font-size:11px;color:var(--gray400)">${c.order||'—'}</div>
+        <span class="car-num" style="font-family:'JetBrains Mono',monospace;font-size:12px">${c.plate||'—'}</span>
+        <div style="font-size:11px;color:var(--gray400);margin-top:3px">${c.order||'—'}</div>
       </td>
       <td>
         <div style="font-weight:600">${c.model||'—'}</div>
