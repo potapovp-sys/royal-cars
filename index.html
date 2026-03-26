@@ -802,10 +802,7 @@
     0%,100% { box-shadow: inset 0 0 0 9999px rgba(255,20,20,0.35); }
     50%      { box-shadow: inset 0 0 0 9999px rgba(255,20,20,0.72); }
   }
-  @keyframes rc-pulse-gold {
-    0%,100% { box-shadow: inset 0 0 0 9999px rgba(255,155,0,0.30); }
-    50%      { box-shadow: inset 0 0 0 9999px rgba(255,155,0,0.65); }
-  }
+
 
   /* 🔴 ПРОСРОЧЕНО */
   tbody tr.row-overdue td {
@@ -817,15 +814,15 @@
   tbody tr.row-overdue .car-num { background:#ff0000!important; color:#fff!important; border:none!important; font-weight:900!important; }
   tbody tr.row-overdue:hover td { animation: none; box-shadow: inset 0 0 0 9999px rgba(255,20,20,0.60) !important; }
 
-  /* 🟡 СЕГОДНЯ */
+  /* 🟡 СЕГОДНЯ — статичный золотой, без анимации */
   tbody tr.row-today td {
-    animation: rc-pulse-gold 1.4s ease-in-out infinite;
+    box-shadow: inset 0 0 0 9999px rgba(255,155,0,0.35) !important;
     border-top: 1px solid rgba(255,155,0,0.45) !important;
     border-bottom: 1px solid rgba(255,155,0,0.45) !important;
   }
   tbody tr.row-today td:first-child { border-left: 8px solid #ffaa00 !important; }
   tbody tr.row-today .car-num { background:#ff9900!important; color:#fff!important; border:none!important; font-weight:900!important; }
-  tbody tr.row-today:hover td { animation: none; box-shadow: inset 0 0 0 9999px rgba(255,155,0,0.58) !important; }
+  tbody tr.row-today:hover td { box-shadow: inset 0 0 0 9999px rgba(255,155,0,0.55) !important; }
 
   /* 🔵 СКОРО */
   tbody tr.row-soon td {
