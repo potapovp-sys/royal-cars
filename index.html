@@ -3259,13 +3259,21 @@ async function initFirebase(){
             slDb = incoming.map(c => {
               const ex = existMap[c.order];
               if(ex){
-                // Обновляем поля из 1С, сохраняем даты/историю/комментарии/суммы
+                // Firebase — источник правды: берём все поля из Firebase
+                // Сохраняем только рабочие данные которых нет в Firebase
                 return Object.assign({}, ex, {
-                  model:  c.model  || ex.model,
-                  client: c.client || ex.client,
-                  plate:  c.plate  || ex.plate,
-                  intake: c.intake || ex.intake,
-                  debt:   c.debt   || ex.debt,
+                  model:       c.model       || ex.model,
+                  client:      c.client      || ex.client,
+                  plate:       c.plate       || ex.plate,
+                  intake:      c.intake      || ex.intake,
+                  debt:        c.debt        || ex.debt,
+                  releaseDate: c.releaseDate !== undefined ? c.releaseDate : ex.releaseDate,
+                  dateHistory: c.dateHistory && c.dateHistory.length ? c.dateHistory : ex.dateHistory,
+                  comments:    c.comments    && c.comments.length    ? c.comments    : ex.comments,
+                  issued:      c.issued      !== undefined ? c.issued      : ex.issued,
+                  issuedAt:    c.issuedAt    !== undefined ? c.issuedAt    : ex.issuedAt,
+                  status:      c.status      || ex.status,
+                  masterNote:  c.masterNote  !== undefined ? c.masterNote  : ex.masterNote,
                 });
               }
               return c;
@@ -3547,11 +3555,13 @@ updateHeader();
 
 let _slSeed = [{"id":1,"order":"C000029230","client":"Климачев Николай Е.","model":"SUBARU BRZ","plate":"М079НЕ977","intake":"2026-01-17","releaseDate":"2026-03-28","status":"В работе","masterNote":"","issued":false,"issuedAt":"","dateHistory":[],"comments":[]},{"id":2,"order":"C000029368","client":"Потапова Татьяна А.","model":"Тойота LC200","plate":"Р130ММ799","intake":"2026-02-23","releaseDate":"","status":"В работе","masterNote":"","issued":false,"issuedAt":"","dateHistory":[],"comments":[]},{"id":3,"order":"C000029407","client":"Лабузова Валерия А.","model":"CHERY TIGGO","plate":"Е973ЕО977","intake":"2026-03-03","releaseDate":"2026-03-21","status":"В работе","masterNote":"","issued":false,"issuedAt":"","dateHistory":[],"comments":[]},{"id":4,"order":"C000029431","client":"Вайно Николай Эдуа.","model":"Mercedes-Benz GLS 450","plate":"Е554ЕВ977","intake":"2026-03-07","releaseDate":"2026-03-28","status":"В работе","masterNote":"","issued":false,"issuedAt":"","dateHistory":[],"comments":[]},{"id":5,"order":"C000029456","client":"Бугай Игорь Дмитрие.","model":"БМВ M4","plate":"7854ОХ-5","intake":"2026-03-12","releaseDate":"2026-03-23","status":"В работе","masterNote":"","issued":false,"issuedAt":"","dateHistory":[],"comments":[]},{"id":6,"order":"C000029466","client":"Сердюков Виталий И.","model":"BMW 320","plate":"А621МЕ797","intake":"2026-03-13","releaseDate":"2026-03-28","status":"В работе","masterNote":"","issued":false,"issuedAt":"","dateHistory":[],"comments":[]},{"id":7,"order":"C000029445","client":"Васюта Юлия Юрьевна","model":"Jeep Grand Cherokee","plate":"А493ХС89","intake":"2026-03-15","releaseDate":"2026-03-27","status":"В работе","masterNote":"","issued":false,"issuedAt":"","dateHistory":[],"comments":[]},{"id":8,"order":"C000029444","client":"Тоболенко Борис Фе.","model":"Тойота LC200","plate":"О517ОО50","intake":"2026-03-16","releaseDate":"","status":"В работе","masterNote":"","issued":false,"issuedAt":"","dateHistory":[],"comments":[{"text":"Ждём бампер","author":"Мастер","ts":"23.03.2026 10:00"}]},{"id":9,"order":"C000029489","client":"Кузменков Михаил Н.","model":"SUBARU Forester","plate":"В400ВО790","intake":"2026-03-16","releaseDate":"2026-03-20","status":"В работе","masterNote":"","issued":false,"issuedAt":"","dateHistory":[],"comments":[]},{"id":10,"order":"C000029491","client":"Архипов Павел Алек.","model":"SUBARU Forester Turbo","plate":"М266РН199","intake":"2026-03-17","releaseDate":"2026-03-25","status":"В работе","masterNote":"","issued":false,"issuedAt":"","dateHistory":[],"comments":[]},{"id":11,"order":"C000029493","client":"Ярослав LR сервис","model":"BMW 530d","plate":"Б/Н","intake":"2026-03-17","releaseDate":"2026-03-21","status":"В работе","masterNote":"","issued":false,"issuedAt":"","dateHistory":[],"comments":[]},{"id":12,"order":"C000029500","client":"Карлосон ООО","model":"Mercedes-Benz G 500","plate":"Р369КМ797","intake":"2026-03-17","releaseDate":"2026-03-20","status":"В работе","masterNote":"","issued":false,"issuedAt":"","dateHistory":[],"comments":[]},{"id":13,"order":"C000029499","client":"ООО ТТС","model":"HONGQI H5","plate":"К132УХ797","intake":"2026-03-17","releaseDate":"2026-03-30","status":"В работе","masterNote":"","issued":false,"issuedAt":"","dateHistory":[],"comments":[]},{"id":14,"order":"C000029480","client":"Прибылова Людмила.","model":"SUBARU Forester","plate":"М421ВН799","intake":"2026-03-18","releaseDate":"2026-03-25","status":"В работе","masterNote":"","issued":false,"issuedAt":"","dateHistory":[],"comments":[]},{"id":15,"order":"C000029502","client":"ГЛАВТАКСИ","model":"—","plate":"Т666ТТ66","intake":"2026-03-18","releaseDate":"","status":"В работе","masterNote":"","issued":false,"issuedAt":"","dateHistory":[],"comments":[]},{"id":16,"order":"C000029475","client":"Ковалева Вероника","model":"Мазда CX-5","plate":"А025УС67","intake":"2026-03-19","releaseDate":"2026-04-02","status":"В работе","masterNote":"","issued":false,"issuedAt":"","dateHistory":[],"comments":[]},{"id":17,"order":"C000029507","client":"Гаврилов Сергей Ник.","model":"SUBARU Forester","plate":"У691ОО77","intake":"2026-03-19","releaseDate":"2026-03-24","status":"В работе","masterNote":"","issued":false,"issuedAt":"","dateHistory":[],"comments":[]},{"id":18,"order":"C000029510","client":"LR Сервис","model":"—","plate":"Е384МТ977","intake":"2026-03-19","releaseDate":"","status":"В работе","masterNote":"","issued":false,"issuedAt":"","dateHistory":[],"comments":[]},{"id":19,"order":"C000029514","client":"Карлосон ООО","model":"—","plate":"С455ЕН126","intake":"2026-03-19","releaseDate":"","status":"В работе","masterNote":"","issued":false,"issuedAt":"","dateHistory":[],"comments":[]}];
 let slDb = (function(){
+  // Всегда берём данные из Firebase — localStorage только кэш для офлайна
+  // Но при первом запуске до прихода Firebase показываем кэш
   try{
     const s = localStorage.getItem('sl_db');
     if(s){ const d=JSON.parse(s); if(d&&d.length>0) return d; }
   }catch(e){}
-  return _slSeed.map(c=>Object.assign({},c));
+  return [];
 })();
 let slEditingId = null;
 let slSortCol = null, slSortDir = 1;
