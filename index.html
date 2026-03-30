@@ -693,6 +693,7 @@
   .dl-badge.inwork { background: rgba(93,173,226,0.12); color: #5dade2; }
   .dl-badge.nodate { background: rgba(255,255,255,0.06); color: var(--gray400); }
   .dl-badge.done { background: rgba(46,204,113,0.12); color: #2ecc71; }
+  .dl-badge.issued { background: rgba(231,76,60,0.15); color: #ff6b5b; border: 1px solid rgba(231,76,60,0.4); cursor:pointer; }
 
   /* ══ RESPONSIVE ══ */
   ::-webkit-scrollbar { width: 5px; height: 5px; }
@@ -841,6 +842,11 @@
   tbody tr.row-done td { opacity: 0.22 !important; filter: grayscale(0.5) !important; }
   tbody tr.row-done td:first-child { border-left: 4px solid rgba(0,196,122,0.35) !important; }
   tbody tr.row-done:hover td { opacity: 0.6 !important; filter: none !important; }
+
+  /* 🚗 ВЫДАН, НО НЕ ОПЛАЧЕН */
+  tbody tr.row-issued td { box-shadow: inset 0 0 0 9999px rgba(231,76,60,0.14) !important; border-top:1px solid rgba(231,76,60,0.25)!important; border-bottom:1px solid rgba(231,76,60,0.25)!important; }
+  tbody tr.row-issued td:first-child { border-left: 8px solid rgba(231,76,60,0.7) !important; }
+  tbody tr.row-issued:hover td { box-shadow: inset 0 0 0 9999px rgba(231,76,60,0.28) !important; }
 
   /* Expand строки */
   tbody tr.expand-row.row-overdue td { animation: none; box-shadow: inset 0 0 0 9999px rgba(255,20,20,0.12) !important; border-left: 8px solid rgba(255,0,0,0.35) !important; }
@@ -1107,6 +1113,7 @@
             <option value="Согласование">Согласование</option>
             <option value="Выдан">Выдан</option>
             <option value="Отменён">Отменён</option>
+            <option value="Выдан (не оплачен)">Выдан (не оплачен)</option>
           </select>
         </div>
         <div class="form-group"><label>Комментарий мастера</label><input type="text" id="sl-f-master-note" placeholder="Текущий статус работ..."></div>
@@ -1781,6 +1788,7 @@ let deadlineFilter = null; // 'overdue'|'today'|'soon'|'inwork'|'done'|null
 // ══════════ DEADLINE HELPERS ══════════
 function getDeadlineStatus(r){
   if(r.оплата) return 'done';
+  if(r.выдан) return 'issued'; // выдан но не оплачен
   if(!r.выдача) return 'inwork';
   const today = new Date(); today.setHours(0,0,0,0);
   const rel = new Date(r.выдача); rel.setHours(0,0,0,0);
@@ -1794,6 +1802,7 @@ function getDeadlineStatus(r){
 function fmtDeadlineBadge(r){
   const s = getDeadlineStatus(r);
   if(s==='done') return '<span class="dl-badge done">✅ Выдан</span>';
+  if(s==='issued') return '<span class="dl-badge issued">🚗 Выдан · не оплачен</span>';
   if(s==='overdue'){
     const today=new Date();today.setHours(0,0,0,0);
     const rel=new Date(r.выдача);rel.setHours(0,0,0,0);
@@ -1873,10 +1882,10 @@ function renderTable(){
   empty.style.display='none';
   tbody.innerHTML=rows.map(r=>{
     const ds=getDeadlineStatus(r);
-    const sb={'Оплачен':'badge-green','Счёт выставлен':'badge-blue','В работе':'badge-yellow','Оценка':'badge-gray','Нет авто':'badge-gray','Отменён':'badge-red'}[r.статус]||'badge-gray';
+    const sb={'Оплачен':'badge-green','Счёт выставлен':'badge-blue','В работе':'badge-yellow','Оценка':'badge-gray','Нет авто':'badge-gray','Отменён':'badge-red','Выдан (не оплачен)':'badge-red'}[r.статус]||'badge-gray';
     const ws=(r.работы||'').split('\n').filter(Boolean);
     const wshort=ws.length>1?`${ws[0]} <span style="color:var(--gray400);font-size:11px">+${ws.length-1}</span>`:(ws[0]||'—');
-    const rowClass = ds==='overdue'?'row-overdue':ds==='today'?'row-today':ds==='soon'?'row-soon':ds==='done'?'row-done':'row-inwork';
+    const rowClass = ds==='overdue'?'row-overdue':ds==='today'?'row-today':ds==='soon'?'row-soon':ds==='done'?'row-done':ds==='issued'?'row-issued':'row-inwork';
     return `<tr class="${rowClass}">
       <td style="font-family:'JetBrains Mono',monospace;color:var(--gray200);white-space:nowrap">${r.зн||'—'}</td>
       <td style="white-space:nowrap"><span class="car-num">${r.гос||'—'}</span></td>
@@ -1884,7 +1893,7 @@ function renderTable(){
       <td style="max-width:220px;cursor:pointer;font-size:13px" onclick="toggleExpand(${r.id})">${wshort}</td>
       <td class="col-hide-md" style="color:var(--gray400);font-size:13px;white-space:nowrap">${r.приемка||'—'}</td>
       <td class="col-hide-md" style="color:var(--gray400);font-size:13px;white-space:nowrap">${r.выдача||'—'}</td>
-      <td style="white-space:nowrap">${fmtDeadlineBadge(r)}</td>
+      <td style="white-space:nowrap;cursor:pointer" onclick="toggleIssued(${r.id})" title="${r.выдан?'Снять отметку выдачи':'Отметить как выданный'}">${fmtDeadlineBadge(r)}</td>
       <td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--gold2);white-space:nowrap">${fmt(r.цена)}</td>
       <td><span class="badge ${sb}">${r.статус}</span></td>
       <td class="col-hide-md"><span class="check-icon" onclick="toggleField(${r.id},'счет')">${r.счет?'✅':'⬜'}</span></td>
@@ -1935,6 +1944,25 @@ function toggleExpand(id){
 }
 
 // FIX 5: toggle field updates status correctly
+function toggleIssued(id){
+  const r=db.find(x=>x.id===id); if(!r) return;
+  if(r.выдан){
+    // Снять отметку выдачи
+    r.выдан = false;
+    if(r.статус === 'Выдан (не оплачен)') r.статус = 'В работе';
+  } else {
+    // Отметить как выданный
+    r.выдан = true;
+    if(r.статус === 'Оплачен' || r.статус === 'Счёт выставлен'){
+      // Уже оплачен — просто помечаем выданным, статус не меняем
+    } else {
+      // Не оплачен — ставим "Выдан (не оплачен)" чтобы было видно долг
+      r.статус = 'Выдан (не оплачен)';
+    }
+  }
+  saveDB(); renderTable();
+}
+
 function toggleField(id,field){
   const r=db.find(x=>x.id===id); if(!r) return;
   r[field]=!r[field];
