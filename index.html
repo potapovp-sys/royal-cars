@@ -895,6 +895,7 @@
     </nav>
     <div class="header-stats">
       <div>Авто: <span id="h-total">0</span></div>
+      <div style="color:#ff6b5b">🔴 <span id="h-overdue">0</span></div>
       <div>Выручка: <span id="h-revenue">—</span></div>
       <div>Прибыль: <span id="h-profit">—</span></div>
       <div id="sync-status" style="color:var(--gray400);font-size:11px">⚪ Локально</div>
@@ -1148,6 +1149,7 @@
 
       <div style="display:flex;gap:12px;justify-content:flex-end">
         <button class="btn btn-outline" onclick="slCloseModal()">Отмена</button>
+        <button class="btn btn-outline" onclick="slDeleteRecord()" style="border-color:#e74c3c;color:#e74c3c" title="Удалить запись">🗑</button>
         <button class="btn btn-outline" id="sl-issue-btn" onclick="slToggleIssued()" style="border-color:#00c47a;color:#00c47a">✓ Выдан</button>
         <button class="btn btn-gold" onclick="slSaveRecord()">💾 Сохранить</button>
       </div>
@@ -1742,7 +1744,7 @@ let db = JSON.parse(localStorage.getItem('rc_db3')||'null');
 if(!db) { db=RAW.map((r,i)=>({...r,id:Date.now()+i,доход:(r.цена||0)-(r.себест||0)})); saveDB(); }
 let editId=null, sortField=null, sortDir=1, hidePaid=false, activePeriod='month', selectedWorks=[];
 
-function saveDB(){localStorage.setItem('rc_db3',JSON.stringify(db));}
+function saveDB(){localStorage.setItem('rc_db3',JSON.stringify(db));window.__lastDbSave=Date.now();if(FIREBASE_ENABLED&&fbRef){fbRef.set(db).catch(e=>console.error('FB write err:',e));}}
 function fmt(n){if(n===undefined||n===null||isNaN(n))return'—';return Math.round(n).toLocaleString('ru-RU')+' ₽';}
 function fmtPct(n){if(n===null||n===undefined||isNaN(n))return'—';return(n*100).toFixed(1)+'%';}
 function calcD(r){return(r.цена||0)-(r.себест||0);}
@@ -1763,6 +1765,13 @@ function updateHeader(){
   document.getElementById('h-total').textContent=db.length;
   document.getElementById('h-revenue').textContent=db.reduce((s,r)=>s+(r.цена||0),0).toLocaleString('ru-RU')+' ₽';
   document.getElementById('h-profit').textContent=db.reduce((s,r)=>s+calcD(r),0).toLocaleString('ru-RU')+' ₽';
+  // Просроченные из контроля сроков
+  const overdueEl = document.getElementById('h-overdue');
+  if(overdueEl && typeof slDb !== 'undefined'){
+    const n = slDb.filter(c=>slGetStatus(c)==='overdue').length;
+    overdueEl.textContent = n;
+    overdueEl.parentElement.style.display = n > 0 ? '' : 'none';
+  }
 }
 
 let deadlineFilter = null; // 'overdue'|'today'|'soon'|'inwork'|'done'|null
@@ -2513,13 +2522,77 @@ function saveRecord(){
       saveWorkPriceMemory();
     }
   }
-  // Learn from price distribution if master edited it
-  learnFromDistribution();
   // Store per-work distribution amounts in record for export
   if(currentDistribution && currentDistribution.length){
     rec.распределение = currentDistribution.map(x=>({работа:x.work,сумма:x.amount}));
   }
-  saveDB();renderTable();closeModal();showToast(editId?'Запись обновлена':'Автомобиль добавлен');
+  // Learn from price distribution if master edited it
+  learnFromDistribution();
+  // Синхронизируем с Контролем сроков по гос. номеру
+  const syncRec = editId ? db.find(x=>x.id===editId) : db[db.length-1];
+  if(typeof syncDbToSl === 'function' && syncRec) syncDbToSl(syncRec);
+  saveDB();renderTable();closeModal();showToast(editId?'Запись обновлена ✓':'Автомобиль добавлен ✓');
+}
+
+
+// ══════════════════════════════════════════════════════
+// СИНХРОНИЗАЦИЯ: КАРЛСОН ↔ Контроль сроков (по гос. номеру)
+// ══════════════════════════════════════════════════════
+function normPlate(s){ return (s||'').replace(/\s/g,'').toUpperCase(); }
+
+// Вызывается после сохранения в КАРЛСОН → обновляет Контроль сроков
+function syncDbToSl(rec){
+  if(!rec || !rec.гос || typeof slDb==='undefined') return;
+  const plate = normPlate(rec.гос);
+  const sl = slDb.find(c => normPlate(c.plate) === plate);
+  if(!sl) return;
+  let changed = false;
+  // Синхронизируем дату выдачи
+  if(rec.выдача && rec.выдача !== sl.releaseDate){
+    sl.releaseDate = rec.выдача;
+    changed = true;
+  }
+  // Синхронизируем статус выдачи
+  if(rec.статус === 'Оплачен' && !sl.issued){
+    sl.issued = true;
+    sl.issuedAt = sl.issuedAt || new Date().toLocaleDateString('ru-RU');
+    sl.status = 'Выдан';
+    changed = true;
+  } else if(rec.статус !== 'Оплачен' && sl.issued){
+    // Если статус изменили обратно — снимаем выдачу
+    sl.issued = false;
+    sl.issuedAt = '';
+    changed = true;
+  }
+  if(changed){
+    slSaveDb();
+    if(document.getElementById('page-сроки')?.classList.contains('active')) slRenderAll();
+  }
+}
+
+// Вызывается после сохранения в Контроле сроков → обновляет КАРЛСОН
+function syncSlToDb(slRec){
+  if(!slRec || !slRec.plate || typeof db==='undefined') return;
+  const plate = normPlate(slRec.plate);
+  const r = db.find(x => normPlate(x.гос) === plate);
+  if(!r) return;
+  let changed = false;
+  // Синхронизируем дату выдачи
+  if(slRec.releaseDate && slRec.releaseDate !== r.выдача){
+    r.выдача = slRec.releaseDate;
+    changed = true;
+  }
+  // Синхронизируем статус выдачи
+  if(slRec.issued && r.статус !== 'Оплачен'){
+    r.статус = 'Оплачен';
+    r.оплата = true;
+    r.счет = true;
+    changed = true;
+  }
+  if(changed){
+    saveDB();
+    if(document.getElementById('page-учет')?.classList.contains('active')) renderTable();
+  }
 }
 
 // ══════════ DASHBOARD ══════════
@@ -3201,7 +3274,9 @@ async function initFirebase(){
     slFbRef.on('value', snap => {
       const data = snap.val();
       if(data){
-        const incoming = Array.isArray(data) ? data : Object.values(data);
+        const raw = Array.isArray(data) ? data : Object.values(data);
+        // Переназначаем уникальные id по порядку (исправляет дубли после перезаписей)
+        const incoming = raw.map((c, i) => ({...c, id: i + 1}));
         if(incoming.length > 0){
           // MERGE: при обновлении из Firebase сохраняем рабочие данные
           if(slDb && slDb.length){
@@ -3269,6 +3344,8 @@ async function initFirebase(){
     fbRef.on('value', snap => {
       const data = snap.val();
       if(data){
+        // Пропускаем если мы только что сохранили сами (< 3 сек) — иначе Firebase перезапишет свежие данные
+        if(window.__lastDbSave && Date.now() - window.__lastDbSave < 3000) return;
         db = Array.isArray(data) ? data : Object.values(data);
         localStorage.setItem('rc_db3', JSON.stringify(db));
         renderTable();
@@ -3582,6 +3659,7 @@ function slRenderAll(){
   slRenderStats();
   slRenderOverdueBlock();
   slRenderTable();
+  if(typeof updateHeader==='function') updateHeader();
 }
 
 function slRenderStats(){
@@ -3676,13 +3754,15 @@ function slRenderTable(){
       <td style="font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--gold2)">${c.debt?c.debt+' ₽':'—'}</td>
       <td>
         <div style="font-weight:700;color:${slGetStatus(c)==='overdue'?'#ff6b5b':slGetStatus(c)==='today'?'#00f5c4':'var(--off-white)'}">${slFmt(c.releaseDate)}</div>
-        ${c.releaseDate&&slDaysDiff(c.releaseDate)!==null?`<div style="font-size:11px;color:var(--gray400)">${slDaysDiff(c.releaseDate)<0?Math.abs(slDaysDiff(c.releaseDate))+' дн. назад':slDaysDiff(c.releaseDate)===0?'сегодня':'через '+slDaysDiff(c.releaseDate)+' дн.'}</div>`:''}
+        ${c.releaseDate&&slDaysDiff(c.releaseDate)!==null?`<div style="font-size:11px;color:var(--gray400)">${slDaysDiff(c.releaseDate)<0?Math.abs(slDaysDiff(c.releaseDate))+' дн. назад':slDaysDiff(c.releaseDate)===0?'сегодня':'через '+slDaysDiff(c.releaseDate)+' дн.'}</div>`:'<div style="font-size:11px;color:rgba(255,255,255,0.2)">не указана</div>'}
       </td>
       <td><span class="sl-shifts-count ${shifts===0?'zero':''}" title="${shifts?'Было '+shifts+' переносов':'Без переносов'}">🔄 ${shifts}</span></td>
       <td style="max-width:200px">
         ${lastCmt?`<div style="font-size:12px;color:var(--gray200);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${lastCmt.text}</div><div style="font-size:11px;color:var(--gray400)">${lastCmt.author} · ${lastCmt.ts}</div>`:'<span style="color:var(--gray400);font-size:12px">—</span>'}
       </td>
-      <td><button class="btn btn-outline btn-sm" onclick="slOpenModal(${c.id});event.stopPropagation()">✏️</button></td>
+      <td style="white-space:nowrap">
+        <button class="btn btn-outline btn-sm" onclick="slOpenModal(${c.id});event.stopPropagation()" title="Редактировать">✏️</button>
+      </td>
     </tr>`;
   }).join('');
 }
@@ -3762,6 +3842,7 @@ function slApplyDateShift(){
   c.releaseDate=newDate;
   document.getElementById('sl-f-shift-reason').value='';
   slRenderShiftHistory(c);
+  syncSlToDb(c);  // синхронизируем дату с КАРЛСОН
   slSaveDb();
   showToast('Перенос даты сохранён ✓');
 }
@@ -3793,6 +3874,7 @@ function slToggleIssued(){
   if(c.issued){issBtn.textContent='↩ Снять выдачу';issBtn.style.color='#2ecc71';issBtn.style.borderColor='#2ecc71';}
   else{issBtn.textContent='✓ Выдан';issBtn.style.color='#00c47a';issBtn.style.borderColor='#00c47a';}
   slRenderComments(c);
+  if(typeof syncSlToDb === 'function') syncSlToDb(c); // синхронизируем с КАРЛСОН
   slSaveDb();
   showToast(c.issued?'Автомобиль выдан ✓':'Выдача отменена');
 }
@@ -3812,10 +3894,28 @@ function slSaveRecord(){
   const newDate=document.getElementById('sl-f-release-date').value;
   if(newDate !== undefined) c.releaseDate = newDate;
   if(!c.model){showToast('Укажите марку/модель',true);return;}
+  // Синхронизируем с КАРЛСОН
+  const slSyncRec = slDb.find(x=>x.id===slEditingId);
+  if(slSyncRec) syncSlToDb(slSyncRec);
   slSaveDb();
   slCloseModal();
   slRenderAll();
+  updateHeader();
   showToast('Запись сохранена ✓');
+}
+
+function slDeleteRecord(){
+  if(!slEditingId) return;
+  const c = slDb.find(x=>x.id===slEditingId);
+  if(!c) return;
+  if(!confirm('Удалить ' + (c.model||c.plate||'запись') + '?')) return;
+  slDb = slDb.filter(x=>x.id!==slEditingId);
+  // Reassign ids sequentially after delete
+  slDb = slDb.map((r,i)=>({...r, id:i+1}));
+  slSaveDb();
+  slCloseModal();
+  slRenderAll();
+  showToast('Запись удалена');
 }
 
 function slCloseModal(){
@@ -3884,11 +3984,19 @@ function imp1cReset(){
     document.getElementById(id).style.display = i===0?'block':'none';
   });
   document.getElementById('imp1c-file').value = '';
+  // Load saved API key
+  const saved = localStorage.getItem('rc_anthropic_key')||'';
+  const keyEl = document.getElementById('imp1c-api-key');
+  if(keyEl) keyEl.value = saved;
   imp1cDataUrl = null;
   imp1cParsed = [];
 }
 
 async function imp1cAnalyze(base64, mime){
+  const apiKey = localStorage.getItem('rc_anthropic_key')||'';
+  if(!apiKey || !apiKey.startsWith('sk-')){
+    throw new Error('Введите Anthropic API ключ (начинается с sk-ant-...)');
+  }
   const prompt = `Ты помощник автосервиса. На скриншоте — заказ-наряд из 1С:Предприятие (конфигурация ДАЛИОН АвтоБизнес).
 
 Твоя задача:
@@ -3932,7 +4040,12 @@ async function imp1cAnalyze(base64, mime){
 
   const resp = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: {
+      'Content-Type': 'application/json',
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-request-mode': 'cors',
+      'x-api-key': localStorage.getItem('rc_anthropic_key')||'',
+    },
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 2000,
@@ -4044,6 +4157,13 @@ function imp1cApply(){
           <div style="margin-top:16px;padding:10px 14px;background:rgba(0,196,122,0.06);border:1px solid rgba(0,196,122,0.2);border-radius:8px;font-size:12px;color:#00c47a;text-align:left">
             <b>Что распознаётся:</b> список работ с нормочасами → группировка по деталям → итоговые нормочасы по каждой группе
           </div>
+        </div>
+        <div style="margin-top:12px" onclick="event.stopPropagation()">
+          <div style="font-size:11px;color:var(--gray400);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.5px">🔑 Anthropic API ключ <span style="color:rgba(255,255,255,0.25);text-transform:none;letter-spacing:0">(вводится один раз, сохраняется в браузере)</span></div>
+          <input type="password" id="imp1c-api-key" placeholder="sk-ant-api03-..." 
+            style="width:100%;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:8px 12px;border-radius:8px;font-size:13px;outline:none;font-family:'JetBrains Mono',monospace;box-sizing:border-box"
+            oninput="localStorage.setItem('rc_anthropic_key',this.value)">
+          <div style="font-size:11px;color:var(--gray400);margin-top:4px">Получить ключ: console.anthropic.com → API Keys</div>
         </div>
       </div>
 
