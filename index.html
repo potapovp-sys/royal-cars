@@ -1765,13 +1765,15 @@ function updateHeader(){
   document.getElementById('h-total').textContent=db.length;
   document.getElementById('h-revenue').textContent=db.reduce((s,r)=>s+(r.цена||0),0).toLocaleString('ru-RU')+' ₽';
   document.getElementById('h-profit').textContent=db.reduce((s,r)=>s+calcD(r),0).toLocaleString('ru-RU')+' ₽';
-  // Просроченные из контроля сроков
-  const overdueEl = document.getElementById('h-overdue');
-  if(overdueEl && typeof slDb !== 'undefined'){
-    const n = slDb.filter(c=>slGetStatus(c)==='overdue').length;
-    overdueEl.textContent = n;
-    overdueEl.parentElement.style.display = n > 0 ? '' : 'none';
-  }
+  // Просроченные из контроля сроков — с защитой от ранней инициализации
+  try {
+    const overdueEl = document.getElementById('h-overdue');
+    if(overdueEl && window.slDb && Array.isArray(window.slDb) && typeof slGetStatus==='function'){
+      const n = window.slDb.filter(c=>slGetStatus(c)==='overdue').length;
+      overdueEl.textContent = n;
+      overdueEl.parentElement.style.display = n > 0 ? '' : 'none';
+    }
+  } catch(e) { /* slDb ещё не инициализирована */ }
 }
 
 let deadlineFilter = null; // 'overdue'|'today'|'soon'|'inwork'|'done'|null
@@ -2531,7 +2533,10 @@ function saveRecord(){
   // Синхронизируем с Контролем сроков по гос. номеру
   const syncRec = editId ? db.find(x=>x.id===editId) : db[db.length-1];
   if(typeof syncDbToSl === 'function' && syncRec) syncDbToSl(syncRec);
-  saveDB();renderTable();closeModal();showToast(editId?'Запись обновлена ✓':'Автомобиль добавлен ✓');
+  saveDB();
+  // Синхронизация с вкладкой СРОКИ
+  if(editId){ const saved=db.find(x=>x.id===editId); if(saved) syncZnToSl(saved); }
+  renderTable();closeModal();showToast(editId?'Запись обновлена ✓':'Автомобиль добавлен ✓');
 }
 
 
@@ -3842,8 +3847,8 @@ function slApplyDateShift(){
   c.releaseDate=newDate;
   document.getElementById('sl-f-shift-reason').value='';
   slRenderShiftHistory(c);
-  syncSlToDb(c);  // синхронизируем дату с КАРЛСОН
   slSaveDb();
+  syncSlToZn(c);  // синхронизируем дату с КАРЛСОН
   showToast('Перенос даты сохранён ✓');
 }
 
@@ -3874,7 +3879,7 @@ function slToggleIssued(){
   if(c.issued){issBtn.textContent='↩ Снять выдачу';issBtn.style.color='#2ecc71';issBtn.style.borderColor='#2ecc71';}
   else{issBtn.textContent='✓ Выдан';issBtn.style.color='#00c47a';issBtn.style.borderColor='#00c47a';}
   slRenderComments(c);
-  if(typeof syncSlToDb === 'function') syncSlToDb(c); // синхронизируем с КАРЛСОН
+  if(typeof syncSlToZn === 'function') syncSlToZn(c); // синхронизируем с КАРЛСОН
   slSaveDb();
   showToast(c.issued?'Автомобиль выдан ✓':'Выдача отменена');
 }
@@ -3898,6 +3903,9 @@ function slSaveRecord(){
   const slSyncRec = slDb.find(x=>x.id===slEditingId);
   if(slSyncRec) syncSlToDb(slSyncRec);
   slSaveDb();
+  // Синхронизация с вкладкой КАРЛСОН
+  const slSynced = slDb.find(x=>x.id===slEditingId);
+  if(slSynced) syncSlToZn(slSynced);
   slCloseModal();
   slRenderAll();
   updateHeader();
@@ -4133,6 +4141,66 @@ function imp1cApply(){
   closeImport1C();
 
   showToast('✓ Загружено из 1С: ' + works.length + ' групп работ, ' + totalNh + ' нч');
+}
+
+
+// ══════════════════════════════════════════════════════════════════
+// СИНХРОНИЗАЦИЯ: КАРЛСОН ↔ КОНТРОЛЬ СРОКОВ
+// Связь: db.зн === parseInt(slDb.order)
+// ══════════════════════════════════════════════════════════════════
+
+function syncZnToSl(dbRecord){
+  // При сохранении в КАРЛСОН → обновляем releaseDate и статус в СРОКИ
+  if(!dbRecord || !dbRecord.зн) return;
+  const slRecord = slDb.find(c => parseInt((c.order||'').replace(/\D/g,'')) === dbRecord.зн);
+  if(!slRecord) return;
+  let changed = false;
+  // Синхронизируем дату выдачи
+  if(dbRecord.выдача && dbRecord.выдача !== slRecord.releaseDate){
+    slRecord.releaseDate = dbRecord.выдача;
+    changed = true;
+  }
+  // Синхронизируем статус "Выдан"
+  const isIssued = dbRecord.статус === 'Оплачен' || dbRecord.оплата;
+  if(isIssued && !slRecord.issued){
+    slRecord.issued = true;
+    slRecord.issuedAt = slRecord.issuedAt || new Date().toLocaleDateString('ru-RU');
+    changed = true;
+  } else if(!isIssued && slRecord.issued){
+    slRecord.issued = false;
+    changed = true;
+  }
+  if(changed){
+    slSaveDb();
+    console.log('Синхронизировано КАРЛСОН→СРОКИ: ' + dbRecord.зн);
+  }
+}
+
+function syncSlToZn(slRecord){
+  // При сохранении в СРОКИ → обновляем выдача в КАРЛСОН
+  if(!slRecord || !slRecord.order) return;
+  const zn = parseInt(slRecord.order.replace(/\D/g,''));
+  if(!zn) return;
+  const dbRecord = db.find(r => r.зн === zn);
+  if(!dbRecord) return;
+  let changed = false;
+  // Синхронизируем дату выдачи
+  if(slRecord.releaseDate && slRecord.releaseDate !== dbRecord.выдача){
+    dbRecord.выдача = slRecord.releaseDate;
+    changed = true;
+  }
+  // Синхронизируем статус
+  if(slRecord.issued && dbRecord.статус !== 'Оплачен'){
+    dbRecord.статус = 'Оплачен';
+    dbRecord.оплата = true;
+    dbRecord.счет = true;
+    changed = true;
+  }
+  if(changed){
+    saveDB();
+    renderTable();
+    console.log('Синхронизировано СРОКИ→КАРЛСОН: зн=' + zn);
+  }
 }
 
 </script>
