@@ -2515,6 +2515,11 @@ function saveRecord(){
   rec.оплата=rec.статус==='Оплачен';
   if(!rec.авто){alert('Введите марку/модель');return;}
 
+  // ВАЖНО: ставим распределение в rec ДО записи в db
+  if(currentDistribution && currentDistribution.length){
+    rec.распределение = currentDistribution.map(x=>({работа:x.work,сумма:x.amount}));
+  }
+
   // Learn: if editing and price changed, update work price memory
   if(editId){
     const old=db.find(x=>x.id===editId);
@@ -2551,10 +2556,6 @@ function saveRecord(){
       });
       saveWorkPriceMemory();
     }
-  }
-  // Store per-work distribution amounts in record for export
-  if(currentDistribution && currentDistribution.length){
-    rec.распределение = currentDistribution.map(x=>({работа:x.work,сумма:x.amount}));
   }
   // Learn from price distribution if master edited it
   learnFromDistribution();
@@ -2875,15 +2876,20 @@ function printInvoice(id){
   let totalSum = 0;
 
   if(dist && dist.length){
+    // Проверяем что сумма распределения совпадает с ценой записи
+    const distTotal = dist.reduce((s,x)=>s+(x.сумма||0), 0);
+    // Если суммы расходятся — масштабируем распределение пропорционально к актуальной цене
+    const scaleFactor = (r.цена && distTotal && Math.abs(distTotal - r.цена) > 1) ? r.цена / distTotal : 1;
     dist.forEach((item, i) => {
-      totalSum += item.сумма;
+      const sумма = Math.round(item.сумма * scaleFactor);
+      totalSum += sумма;
       rows += `<tr>
         <td style="padding:8px 12px;border:1px solid #ccc;text-align:center">${i+1}</td>
         <td style="padding:8px 12px;border:1px solid #ccc">Техническое обслуживание и ремонт а/м по заказ-наряду № ${r.зн||'—'} от ${dateStr} авто ${r.авто||''} ${r.гос||''}<br><span style="color:#555;font-size:12px">${item.работа}</span></td>
         <td style="padding:8px 12px;border:1px solid #ccc;text-align:center">усл</td>
         <td style="padding:8px 12px;border:1px solid #ccc;text-align:right">1</td>
-        <td style="padding:8px 12px;border:1px solid #ccc;text-align:right">${item.сумма.toLocaleString('ru-RU', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
-        <td style="padding:8px 12px;border:1px solid #ccc;text-align:right">${item.сумма.toLocaleString('ru-RU', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+        <td style="padding:8px 12px;border:1px solid #ccc;text-align:right">${sумма.toLocaleString('ru-RU', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+        <td style="padding:8px 12px;border:1px solid #ccc;text-align:right">${sумма.toLocaleString('ru-RU', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
       </tr>`;
     });
   } else {
