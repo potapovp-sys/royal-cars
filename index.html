@@ -1029,6 +1029,94 @@
     <div class="chart-card"><h4>ТОП-10 ПО МАРЖЕ</h4><div class="bar-chart" id="bar-margin"></div></div>
     <div class="chart-card"><h4>ПРИБЫЛЬ ПО МАРКАМ</h4><div class="bar-chart" id="bar-brands"></div></div>
   </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- АНАЛИТИКА ПО ДЕТАЛЯМ                                       -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <div class="section-title" style="margin:28px 0 16px;display:flex;align-items:center;gap:12px">
+    АНАЛИТИКА ПО ДЕТАЛЯМ
+    <span style="font-size:11px;font-weight:400;color:var(--gray400);text-transform:none;letter-spacing:0">
+      стоимость · маржа · по маркам
+    </span>
+  </div>
+
+  <!-- Фильтры -->
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
+    <input type="text" id="parts-search" placeholder="🔍 Поиск по детали..." 
+      oninput="renderPartsAnalytics()"
+      style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);color:#fff;padding:7px 12px;border-radius:8px;font-size:13px;outline:none;width:220px">
+    <select id="parts-sort" onchange="renderPartsAnalytics()"
+      style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);color:#fff;padding:7px 12px;border-radius:8px;font-size:13px;outline:none">
+      <option value="totalPrice">По выручке ↓</option>
+      <option value="avgPrice">По средней цене ↓</option>
+      <option value="margin">По марже ↓</option>
+      <option value="count">По частоте ↓</option>
+    </select>
+    <select id="parts-car-filter" onchange="renderPartsAnalytics()"
+      style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);color:#fff;padding:7px 12px;border-radius:8px;font-size:13px;outline:none">
+      <option value="">Все марки</option>
+    </select>
+    <div style="margin-left:auto;font-size:12px;color:var(--gray400)" id="parts-count-label"></div>
+  </div>
+
+  <!-- KPI по деталям -->
+  <div class="kpi-grid" style="margin-bottom:20px" id="parts-kpi"></div>
+
+  <!-- Основная таблица деталей -->
+  <div class="chart-card" style="margin-bottom:20px;padding:0;overflow:hidden">
+    <div style="padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between">
+      <h4 style="margin:0">ДЕТАЛИ — ЦЕНЫ И МАРЖА</h4>
+      <div style="font-size:11px;color:var(--gray400)">клик по строке — детализация по маркам</div>
+    </div>
+    <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:13px" id="parts-table">
+        <thead>
+          <tr style="background:rgba(255,255,255,0.03)">
+            <th style="padding:10px 16px;text-align:left;font-size:11px;color:var(--gray400);font-weight:600;letter-spacing:0.5px;border-bottom:1px solid rgba(255,255,255,0.06)">ДЕТАЛЬ</th>
+            <th style="padding:10px 12px;text-align:right;font-size:11px;color:var(--gray400);font-weight:600;letter-spacing:0.5px;border-bottom:1px solid rgba(255,255,255,0.06)">ЗАКАЗОВ</th>
+            <th style="padding:10px 12px;text-align:right;font-size:11px;color:var(--gray400);font-weight:600;letter-spacing:0.5px;border-bottom:1px solid rgba(255,255,255,0.06)">СРЕДНЯЯ ЦЕНА</th>
+            <th style="padding:10px 12px;text-align:right;font-size:11px;color:var(--gray400);font-weight:600;letter-spacing:0.5px;border-bottom:1px solid rgba(255,255,255,0.06)">СРЕДН. СЕБЕСТ.</th>
+            <th style="padding:10px 12px;text-align:right;font-size:11px;color:var(--gray400);font-weight:600;letter-spacing:0.5px;border-bottom:1px solid rgba(255,255,255,0.06)">СРЕДН. ПРИБЫЛЬ</th>
+            <th style="padding:10px 12px;text-align:right;font-size:11px;color:var(--gray400);font-weight:600;letter-spacing:0.5px;border-bottom:1px solid rgba(255,255,255,0.06)">МАРЖА</th>
+            <th style="padding:10px 12px;text-align:right;font-size:11px;color:var(--gray400);font-weight:600;letter-spacing:0.5px;border-bottom:1px solid rgba(255,255,255,0.06)">ВЫРУЧКА ВСЕГО</th>
+            <th style="padding:10px 12px;text-align:left;font-size:11px;color:var(--gray400);font-weight:600;letter-spacing:0.5px;border-bottom:1px solid rgba(255,255,255,0.06)">МАРЖА-БАР</th>
+          </tr>
+        </thead>
+        <tbody id="parts-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Детализация по маркам (раскрывается) -->
+  <div id="parts-detail-card" class="chart-card" style="margin-bottom:20px;display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <h4 id="parts-detail-title" style="margin:0"></h4>
+      <button onclick="document.getElementById('parts-detail-card').style.display='none'" 
+        style="background:none;border:none;color:var(--gray400);font-size:18px;cursor:pointer;padding:0 4px">✕</button>
+    </div>
+    <div id="parts-detail-content"></div>
+  </div>
+
+  <!-- Два графика рядом -->
+  <div class="dash-grid" style="margin-bottom:20px">
+    <div class="chart-card">
+      <h4>ТОП-10 ДЕТАЛЕЙ ПО ВЫРУЧКЕ</h4>
+      <div id="parts-bar-revenue" class="bar-chart"></div>
+    </div>
+    <div class="chart-card">
+      <h4>ТОП-10 ДЕТАЛЕЙ ПО МАРЖЕ %</h4>
+      <div id="parts-bar-margin" class="bar-chart"></div>
+    </div>
+  </div>
+
+  <!-- Тепловая карта: детали × марки -->
+  <div class="chart-card" style="margin-bottom:20px">
+    <h4 style="margin-bottom:16px">МАТРИЦА: ДЕТАЛЬ × МАРКА АВТО — СРЕДНЯЯ ЦЕНА</h4>
+    <div style="overflow-x:auto" id="parts-heatmap"></div>
+  </div>
+
+
 </div>
 
 
@@ -1765,6 +1853,7 @@ function showPage(id,btn){
   if(id==='дашборд') renderDashboard();
   if(id==='наценки') renderPricing();
   if(id==='сроки') slRenderAll();
+  if(id==='дашборд') renderPartsAnalytics();
   updateHeader();
 }
 
@@ -3389,6 +3478,7 @@ async function initFirebase(){
         localStorage.setItem('rc_db3', JSON.stringify(db));
         renderTable();
         updateHeader();
+        if(document.getElementById('page-дашборд')?.classList.contains('active')) renderPartsAnalytics();
         showToast('🔄 Данные синхронизированы');
       }
     });
@@ -4237,6 +4327,281 @@ function syncSlToZn(slRecord){
   }
 }
 
+
+// ══════════════════════════════════════════════════════════════════
+// АНАЛИТИКА ПО ДЕТАЛЯМ
+// ══════════════════════════════════════════════════════════════════
+
+function buildPartsData(carFilter){
+  const byDetail = {};
+
+  db.forEach(r => {
+    const works = (r.работы || '').split('\n').filter(Boolean);
+    if(!works.length) return;
+
+    // Определяем цену и себест на работу
+    const hasDist = r.распределение && r.распределение.length;
+    const perCost = r.себест && works.length ? r.себест / works.length : 0;
+
+    works.forEach(w => {
+      const parts = w.split(' — ');
+      const detail = parts[0]?.trim();
+      const operation = parts[1]?.trim() || 'работа';
+      if(!detail) return;
+
+      // Извлечь марку из авто
+      const brand = (r.авто || '').split(' ')[0] || 'Другое';
+      if(carFilter && brand.toLowerCase() !== carFilter.toLowerCase()) return;
+
+      const dist = hasDist ? r.распределение.find(d => d.работа === w) : null;
+      const perPrice = dist ? dist.сумма : (works.length ? r.цена / works.length : 0);
+
+      if(!byDetail[detail]) byDetail[detail] = {
+        count: 0, totalPrice: 0, totalCost: 0,
+        brands: {}, operations: new Set(), records: []
+      };
+      const d = byDetail[detail];
+      d.count++;
+      d.totalPrice += perPrice;
+      d.totalCost += perCost;
+      d.operations.add(operation);
+      d.records.push({car: r.авто, price: perPrice, cost: perCost, brand});
+
+      // По маркам
+      if(!d.brands[brand]) d.brands[brand] = {count:0, totalPrice:0, totalCost:0};
+      d.brands[brand].count++;
+      d.brands[brand].totalPrice += perPrice;
+      d.brands[brand].totalCost += perCost;
+    });
+  });
+
+  return Object.entries(byDetail).map(([name, d]) => ({
+    name,
+    count: d.count,
+    avgPrice: Math.round(d.totalPrice / d.count),
+    avgCost: Math.round(d.totalCost / d.count),
+    avgProfit: Math.round((d.totalPrice - d.totalCost) / d.count),
+    margin: d.totalCost > 0 ? Math.round((d.totalPrice - d.totalCost) / d.totalPrice * 100) : 0,
+    totalPrice: Math.round(d.totalPrice),
+    brands: d.brands,
+    operations: [...d.operations],
+  }));
+}
+
+function renderPartsAnalytics(){
+  if(!document.getElementById('page-дашборд')?.classList.contains('active')) return;
+
+  const search = (document.getElementById('parts-search')?.value || '').toLowerCase();
+  const sortBy = document.getElementById('parts-sort')?.value || 'totalPrice';
+  const carFilter = document.getElementById('parts-car-filter')?.value || '';
+
+  // Populate car filter
+  const brands = [...new Set(db.map(r => (r.авто||'').split(' ')[0]).filter(Boolean))].sort();
+  const carSel = document.getElementById('parts-car-filter');
+  if(carSel && carSel.options.length <= 1){
+    brands.forEach(b => {
+      const opt = document.createElement('option');
+      opt.value = b; opt.textContent = b;
+      carSel.appendChild(opt);
+    });
+  }
+
+  let data = buildPartsData(carFilter);
+
+  // Filter
+  if(search) data = data.filter(d => d.name.toLowerCase().includes(search));
+
+  // Sort
+  data.sort((a,b) => {
+    if(sortBy === 'totalPrice') return b.totalPrice - a.totalPrice;
+    if(sortBy === 'avgPrice')   return b.avgPrice - a.avgPrice;
+    if(sortBy === 'margin')     return b.margin - a.margin;
+    if(sortBy === 'count')      return b.count - a.count;
+    return 0;
+  });
+
+  // Count label
+  const lbl = document.getElementById('parts-count-label');
+  if(lbl) lbl.textContent = `${data.length} деталей`;
+
+  // ── KPI ─────────────────────────────────────────────────────────
+  const totalRev = data.reduce((s,d)=>s+d.totalPrice,0);
+  const totalCost = data.reduce((s,d)=>s+d.avgCost*d.count,0);
+  const avgMargin = data.length ? Math.round(data.reduce((s,d)=>s+d.margin,0)/data.length) : 0;
+  const topDetail = data[0]?.name || '—';
+  const kpiEl = document.getElementById('parts-kpi');
+  if(kpiEl) kpiEl.innerHTML = `
+    <div class="kpi-card gold"><div class="kpi-label">Выручка по деталям</div><div class="kpi-value gold">${totalRev.toLocaleString('ru-RU')} ₽</div><div class="kpi-sub">${data.length} уникальных деталей</div></div>
+    <div class="kpi-card green"><div class="kpi-label">Средняя маржа</div><div class="kpi-value green">${avgMargin}%</div><div class="kpi-sub">по всем деталям</div></div>
+    <div class="kpi-card blue"><div class="kpi-label">Топ деталь</div><div class="kpi-value blue" style="font-size:16px">${topDetail}</div><div class="kpi-sub">${data[0]?.count||0} заказов</div></div>
+    <div class="kpi-card red"><div class="kpi-label">Самая маржинальная</div><div class="kpi-value red" style="font-size:14px">${[...data].sort((a,b)=>b.margin-a.margin)[0]?.name||'—'}</div><div class="kpi-sub">${[...data].sort((a,b)=>b.margin-a.margin)[0]?.margin||0}% маржи</div></div>
+  `;
+
+  // ── ТАБЛИЦА ──────────────────────────────────────────────────────
+  const maxPrice = Math.max(...data.map(d=>d.avgPrice), 1);
+  const tbody = document.getElementById('parts-tbody');
+  if(tbody) tbody.innerHTML = data.map((d,i) => {
+    const marginColor = d.margin >= 40 ? '#00c47a' : d.margin >= 25 ? '#f5a623' : '#ff6b5b';
+    const barW = Math.round(d.margin / 100 * 120);
+    return `<tr style="cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.04)" 
+        onclick="showPartsDetail('${d.name.replace(/'/g,"\\'")}',${JSON.stringify(d).replace(/</g,'\\u003c')})"
+        onmouseenter="this.style.background='rgba(255,255,255,0.04)'"
+        onmouseleave="this.style.background=''">
+      <td style="padding:11px 16px;font-weight:600">
+        <div>${d.name}</div>
+        <div style="font-size:11px;color:var(--gray400);margin-top:2px">${d.operations.slice(0,2).join(' · ')}${d.operations.length>2?' +'+( d.operations.length-2):''}</div>
+      </td>
+      <td style="padding:11px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:var(--gray400)">${d.count}</td>
+      <td style="padding:11px 12px;text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--gold2)">${d.avgPrice.toLocaleString('ru-RU')} ₽</td>
+      <td style="padding:11px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:var(--gray400)">${d.avgCost.toLocaleString('ru-RU')} ₽</td>
+      <td style="padding:11px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:#00c47a">${d.avgProfit.toLocaleString('ru-RU')} ₽</td>
+      <td style="padding:11px 12px;text-align:right;font-weight:700;color:${marginColor}">${d.margin}%</td>
+      <td style="padding:11px 12px;text-align:right;font-family:'JetBrains Mono',monospace;color:var(--gray200)">${d.totalPrice.toLocaleString('ru-RU')} ₽</td>
+      <td style="padding:11px 12px;min-width:140px">
+        <div style="background:rgba(255,255,255,0.06);border-radius:4px;height:8px;overflow:hidden">
+          <div style="background:${marginColor};width:${Math.min(d.margin,100)}%;height:100%;border-radius:4px;transition:width 0.3s"></div>
+        </div>
+        <div style="font-size:10px;color:var(--gray400);margin-top:2px">${d.margin}% маржа</div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  // ── ГРАФИКИ ──────────────────────────────────────────────────────
+  const top10rev = data.slice(0, 10);
+  const revEl = document.getElementById('parts-bar-revenue');
+  if(revEl && top10rev.length){
+    const maxR = Math.max(...top10rev.map(d=>d.totalPrice));
+    revEl.innerHTML = top10rev.map(d => `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="width:130px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--gray200);flex-shrink:0">${d.name}</div>
+        <div style="flex:1;background:rgba(255,255,255,0.05);border-radius:4px;height:20px;overflow:hidden;position:relative">
+          <div style="background:linear-gradient(90deg,#f5a623,#e67e22);height:100%;width:${Math.round(d.totalPrice/maxR*100)}%;border-radius:4px;transition:width 0.4s"></div>
+          <span style="position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:10px;font-family:'JetBrains Mono',monospace;color:#fff">${d.totalPrice.toLocaleString('ru-RU')} ₽</span>
+        </div>
+      </div>`).join('');
+  }
+
+  const top10mar = [...data].sort((a,b)=>b.margin-a.margin).slice(0,10);
+  const marEl = document.getElementById('parts-bar-margin');
+  if(marEl && top10mar.length){
+    marEl.innerHTML = top10mar.map(d => {
+      const c = d.margin>=40?'#00c47a':d.margin>=25?'#f5a623':'#ff6b5b';
+      return `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div style="width:130px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--gray200);flex-shrink:0">${d.name}</div>
+        <div style="flex:1;background:rgba(255,255,255,0.05);border-radius:4px;height:20px;overflow:hidden;position:relative">
+          <div style="background:${c};height:100%;width:${d.margin}%;border-radius:4px;transition:width 0.4s"></div>
+          <span style="position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:10px;font-family:'JetBrains Mono',monospace;color:#fff">${d.margin}%</span>
+        </div>
+      </div>`}).join('');
+  }
+
+  // ── ТЕПЛОВАЯ КАРТА деталь × марка ────────────────────────────────
+  renderPartsHeatmap(data.slice(0, 12));
+}
+
+function renderPartsHeatmap(data){
+  const hmEl = document.getElementById('parts-heatmap');
+  if(!hmEl) return;
+
+  // Collect all brands
+  const brandSet = new Set();
+  data.forEach(d => Object.keys(d.brands).forEach(b => brandSet.add(b)));
+  const brands = [...brandSet].sort();
+  if(!brands.length || !data.length){ hmEl.innerHTML = '<div style="color:var(--gray400);font-size:13px;padding:20px">Недостаточно данных</div>'; return; }
+
+  const maxPrice = Math.max(...data.flatMap(d => Object.values(d.brands).map(b => b.totalPrice/b.count)));
+
+  let tbl = `<table style="border-collapse:collapse;font-size:11px;min-width:600px">
+    <thead><tr>
+      <th style="padding:8px 12px;text-align:left;color:var(--gray400);font-weight:600;white-space:nowrap;border-bottom:1px solid rgba(255,255,255,0.08)">ДЕТАЛЬ</th>`;
+  brands.forEach(b => {
+    tbl += `<th style="padding:8px 10px;text-align:center;color:var(--gray400);font-weight:600;white-space:nowrap;border-bottom:1px solid rgba(255,255,255,0.08);min-width:80px">${b}</th>`;
+  });
+  tbl += `</tr></thead><tbody>`;
+
+  data.forEach(d => {
+    tbl += `<tr>
+      <td style="padding:8px 12px;font-weight:600;white-space:nowrap;border-bottom:1px solid rgba(255,255,255,0.04)">${d.name}</td>`;
+    brands.forEach(b => {
+      const bd = d.brands[b];
+      if(bd){
+        const avg = Math.round(bd.totalPrice / bd.count);
+        const intensity = avg / maxPrice;
+        const r = Math.round(245 * intensity);
+        const g = Math.round(166 * intensity);
+        const alpha = 0.1 + intensity * 0.5;
+        tbl += `<td style="padding:8px 10px;text-align:center;background:rgba(${r},${g},35,${alpha});border-bottom:1px solid rgba(255,255,255,0.04);border-radius:4px" title="${b}: ${bd.count} заказов, ср. ${avg.toLocaleString('ru-RU')} ₽">
+          <div style="font-family:'JetBrains Mono',monospace;font-weight:700;color:#fff;font-size:11px">${(avg/1000).toFixed(0)}к</div>
+          <div style="font-size:10px;color:rgba(255,255,255,0.5)">${bd.count}×</div>
+        </td>`;
+      } else {
+        tbl += `<td style="padding:8px 10px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.04)"><span style="color:rgba(255,255,255,0.1)">—</span></td>`;
+      }
+    });
+    tbl += `</tr>`;
+  });
+  tbl += `</tbody></table>`;
+  hmEl.innerHTML = tbl;
+}
+
+function showPartsDetail(name, d){
+  const card = document.getElementById('parts-detail-card');
+  const title = document.getElementById('parts-detail-title');
+  const content = document.getElementById('parts-detail-content');
+  if(!card || !title || !content) return;
+
+  title.textContent = `📊 ${name} — детализация по маркам`;
+  card.style.display = 'block';
+  card.scrollIntoView({behavior:'smooth', block:'nearest'});
+
+  const brands = Object.entries(d.brands).sort((a,b) => b[1].totalPrice - a[1].totalPrice);
+  const maxBrandPrice = Math.max(...brands.map(([,b]) => b.totalPrice/b.count));
+
+  content.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:16px">
+      <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:14px">
+        <div style="font-size:11px;color:var(--gray400);margin-bottom:4px">Средняя цена</div>
+        <div style="font-size:22px;font-weight:700;color:var(--gold2)">${d.avgPrice.toLocaleString('ru-RU')} ₽</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:14px">
+        <div style="font-size:11px;color:var(--gray400);margin-bottom:4px">Маржа</div>
+        <div style="font-size:22px;font-weight:700;color:${d.margin>=40?'#00c47a':d.margin>=25?'#f5a623':'#ff6b5b'}">${d.margin}%</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:14px">
+        <div style="font-size:11px;color:var(--gray400);margin-bottom:4px">Всего заказов</div>
+        <div style="font-size:22px;font-weight:700;color:#3d9cf5">${d.count}</div>
+      </div>
+      <div style="background:rgba(255,255,255,0.03);border-radius:10px;padding:14px">
+        <div style="font-size:11px;color:var(--gray400);margin-bottom:4px">Средняя прибыль</div>
+        <div style="font-size:22px;font-weight:700;color:#00c47a">${d.avgProfit.toLocaleString('ru-RU')} ₽</div>
+      </div>
+    </div>
+
+    <div style="font-size:11px;color:var(--gray400);font-weight:600;letter-spacing:0.5px;margin-bottom:10px">ПО МАРКАМ АВТО</div>
+    ${brands.map(([brand, b]) => {
+      const avg = Math.round(b.totalPrice / b.count);
+      const avgCost = Math.round(b.totalCost / b.count);
+      const margin = b.totalCost > 0 ? Math.round((b.totalPrice - b.totalCost) / b.totalPrice * 100) : 0;
+      const mc = margin>=40?'#00c47a':margin>=25?'#f5a623':'#ff6b5b';
+      return `
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:rgba(255,255,255,0.03);border-radius:8px;margin-bottom:6px">
+        <div style="width:90px;font-weight:700;font-size:13px">${brand}</div>
+        <div style="flex:1">
+          <div style="background:rgba(255,255,255,0.05);border-radius:4px;height:6px;overflow:hidden">
+            <div style="background:linear-gradient(90deg,#f5a623,#e67e22);width:${Math.round(avg/maxBrandPrice*100)}%;height:100%;border-radius:4px"></div>
+          </div>
+        </div>
+        <div style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--gold2);width:100px;text-align:right">${avg.toLocaleString('ru-RU')} ₽</div>
+        <div style="font-family:'JetBrains Mono',monospace;color:var(--gray400);width:80px;text-align:right">${avgCost.toLocaleString('ru-RU')} ₽ с/с</div>
+        <div style="font-weight:700;color:${mc};width:50px;text-align:right">${margin}%</div>
+        <div style="color:var(--gray400);font-size:12px;width:50px;text-align:right">${b.count}×</div>
+      </div>`;
+    }).join('')}
+  `;
+}
+
+// Вызывать при открытии дашборда
 </script>
 
 
