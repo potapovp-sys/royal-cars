@@ -838,6 +838,10 @@
   /* ⚪ В РАБОТЕ */
   tbody tr.row-inwork td:first-child { border-left: 4px solid rgba(255,255,255,0.15) !important; }
 
+  /* 💚 ОПЛАЧЕНА, ЕЩЁ В РАБОТЕ */
+  tbody tr.row-paid td:first-child { border-left: 6px solid rgba(0,196,122,0.7) !important; }
+  tbody tr.row-paid td { box-shadow: inset 0 0 0 9999px rgba(0,196,122,0.06) !important; }
+
   /* ✅ ВЫДАНО */
   tbody tr.row-done td { opacity: 0.22 !important; filter: grayscale(0.5) !important; }
   tbody tr.row-done td:first-child { border-left: 4px solid rgba(0,196,122,0.35) !important; }
@@ -2005,10 +2009,16 @@ function renderTable(){
     const rowPriority = r => {
       const paid   = r.оплата||r.платёжСтатус==='Оплачена';
       const issued = r.выдан||r.рабочийСтатус==='Выдана';
-      if(!issued && !paid) return 0;  // в работе, не оплачена — самый приоритет
-      if(!issued &&  paid) return 1;  // оплачена, ещё в работе
-      if( issued && !paid) return 2;  // выдана, не оплачена — тревога
-      return 3;                       // выдана + оплачена — в конец
+      const vyd = r.выдача;
+      const tod = new Date(); tod.setHours(0,0,0,0);
+      const rel = vyd ? new Date(vyd) : null;
+      if(rel) rel.setHours(0,0,0,0);
+      const overdue = !issued && rel && (rel-tod)<0;
+      if(!issued && overdue)  return 0;  // просрочена — самый верх
+      if(!issued && !paid)    return 1;  // в работе, не оплачена
+      if(!issued &&  paid)    return 2;  // оплачена, ещё в работе
+      if( issued && !paid)    return 3;  // выдана, не оплачена — тревога
+      return 4;                          // выдана + оплачена — в конец
     };
     rows.sort((a,b) => rowPriority(a) - rowPriority(b));
   } else {
@@ -2042,10 +2052,22 @@ function renderTable(){
     // Подсветка строк по статусу (не срок, а состояние машины)
     const isPaid   = r.оплата || r.платёжСтатус==='Оплачена';
     const isIssued = r.выдан  || r.рабочийСтатус==='Выдана';
-    const rowClass = (isPaid && isIssued) ? 'row-done'    // оплачена + выдана → приглушена
-                   : isIssued             ? 'row-issued'  // выдана, не оплачена → красная
-                   : isPaid               ? 'row-today'   // оплачена, в работе → золотая
-                   :                        'row-inwork'; // в работе, не оплачена → нейтральная
+    // Просрочка по дате — независимо от статуса оплаты
+    const _vyдача = r.выдача;
+    const _today = new Date(); _today.setHours(0,0,0,0);
+    const _rel = _vyдача ? new Date(_vyдача) : null;
+    if(_rel) _rel.setHours(0,0,0,0);
+    const isOverdue = !isIssued && _rel && (_rel - _today) < 0;
+    const isToday   = !isIssued && _rel && (_rel - _today) === 0;
+    const isSoon    = !isIssued && _rel && (_rel - _today) > 0 && (_rel - _today) <= 3*86400000;
+
+    const rowClass = (isPaid && isIssued) ? 'row-done'    // выдана + оплачена → приглушена
+                   : isIssued             ? 'row-issued'  // выдана, не оплачена → красная мягкая
+                   : isOverdue            ? 'row-overdue' // просрочена по дате → красная мигающая
+                   : isToday             ? 'row-today'   // сдать сегодня → золотая мигающая
+                   : isSoon              ? 'row-soon'    // скоро (1-3 дня) → синяя
+                   : isPaid              ? 'row-paid'    // оплачена, в работе → зелёная полоса
+                   :                       'row-inwork'; // в работе, не оплачена → нейтральная
     return `<tr class="${rowClass}">
       <td style="font-family:'JetBrains Mono',monospace;color:var(--gray200);white-space:nowrap">${r.зн||'—'}</td>
       <td style="white-space:nowrap"><span class="car-num">${r.гос||'—'}</span></td>
