@@ -2237,7 +2237,8 @@ function openAddModal(){
   editId=null; selectedWorks=[];
   document.getElementById('modal-title').textContent='ДОБАВИТЬ АВТОМОБИЛЬ';
   ['f-num','f-zn','f-car','f-intake','f-release','f-cost','f-price','f-note','f-works-custom','f-nh','f-mat','f-zakazchik'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  document.getElementById('f-status').value='В работе';
+  document.getElementById('f-work-status').value='В работе';
+  document.getElementById('f-pay-status').value='Не оплачена';
   document.getElementById('f-markup').value='1.35';
   document.getElementById('f-custom-coef-wrap').style.display='none';
   document.getElementById('works-search').value='';
