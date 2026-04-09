@@ -992,7 +992,6 @@
         <th>Работы</th>
         <th class="col-hide-md" onclick="sortBy('приемка')">Приёмка</th>
         <th class="col-hide-md" onclick="sortBy('выдача')">Выдача</th>
-        <th>Срок</th>
         <th onclick="sortBy('цена')">Сумма З/Н</th>
         <th>Статус</th>
         <th class="col-hide-md" title="Счёт выставлен">📄 Счёт</th>
@@ -2002,10 +2001,17 @@ function renderTable(){
     }
     return true;
   });
-  // Default sort: overdue first, then today, soon, inwork, done
-  const ORDER={overdue:0,today:1,soon:2,inwork:3,done:4};
+  // Сортировка: сначала не выданные+неоплаченные, потом выданные+неоплаченные, потом оплаченные
   if(!sortField){
-    rows.sort((a,b)=>(ORDER[getDeadlineStatus(a)]||3)-(ORDER[getDeadlineStatus(b)]||3));
+    const rowPriority = r => {
+      const paid   = r.оплата||r.платёжСтатус==='Оплачена'||r.статус==='Оплачен';
+      const issued = r.выдан||r.рабочийСтатус==='Выдана'||r.статус==='Оплачен';
+      if(!issued && !paid) return 0;  // в работе, не оплачена — самый приоритет
+      if(!issued &&  paid) return 1;  // оплачена, ещё в работе
+      if( issued && !paid) return 2;  // выдана, не оплачена — тревога
+      return 3;                       // выдана + оплачена — в конец
+    };
+    rows.sort((a,b) => rowPriority(a) - rowPriority(b));
   } else {
     rows.sort((a,b)=>{
       let va,vb;const f=sortField;
@@ -2034,7 +2040,13 @@ function renderTable(){
     const sb = workBadge; // для совместимости
     const ws=(r.работы||'').split('\n').filter(Boolean);
     const wshort=ws.length>1?`${ws[0]} <span style="color:var(--gray400);font-size:11px">+${ws.length-1}</span>`:(ws[0]||'—');
-    const rowClass = ds==='overdue'?'row-overdue':ds==='today'?'row-today':ds==='soon'?'row-soon':ds==='done'?'row-done':ds==='issued'?'row-issued':'row-inwork';
+    // Подсветка строк по статусу (не срок, а состояние машины)
+    const isPaid   = r.оплата || r.платёжСтатус==='Оплачена' || r.статус==='Оплачен';
+    const isIssued = r.выдан  || r.рабочийСтатус==='Выдана'  || r.статус==='Оплачен';
+    const rowClass = (isPaid && isIssued) ? 'row-done'    // оплачена + выдана → приглушена
+                   : isIssued             ? 'row-issued'  // выдана, не оплачена → красная
+                   : isPaid               ? 'row-today'   // оплачена, в работе → золотая
+                   :                        'row-inwork'; // в работе, не оплачена → нейтральная
     return `<tr class="${rowClass}">
       <td style="font-family:'JetBrains Mono',monospace;color:var(--gray200);white-space:nowrap">${r.зн||'—'}</td>
       <td style="white-space:nowrap"><span class="car-num">${r.гос||'—'}</span></td>
@@ -2042,7 +2054,7 @@ function renderTable(){
       <td style="max-width:220px;cursor:pointer;font-size:13px" onclick="toggleExpand(${r.id})">${wshort}</td>
       <td class="col-hide-md" style="color:var(--gray400);font-size:13px;white-space:nowrap">${r.приемка||'—'}</td>
       <td class="col-hide-md" style="color:var(--gray400);font-size:13px;white-space:nowrap">${r.выдача||'—'}</td>
-      <td style="white-space:nowrap;cursor:pointer" onclick="toggleIssued(${r.id})" title="${r.выдан?'Снять отметку выдачи':'Отметить как выданный'}">${fmtDeadlineBadge(r)}</td>
+
       <td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--gold2);white-space:nowrap">${fmt(r.цена)}</td>
       <td style="white-space:nowrap">
         <div><span class="badge ${workBadge}">${workSt}</span></div>
@@ -2088,7 +2100,6 @@ function renderTable(){
       </div></td>
     </tr>`;
   }).join('');
-  updateDeadlineCards();
   updateHeader();
 }
 
