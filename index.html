@@ -1911,11 +1911,14 @@ let deadlineFilter = null; // 'overdue'|'today'|'soon'|'inwork'|'done'|null
 
 // ══════════ DEADLINE HELPERS ══════════
 function getDeadlineStatus(r){
-  // done = оплачена И выдана
-  if(r.оплата && r.выдан) return 'done';
+  // Считаем машину выданной если: флаг выдан=true ИЛИ рабочийСтатус='Выдана' ИЛИ статус='Оплачен' (старые записи)
+  const isIssued = r.выдан || r.рабочийСтатус==='Выдана' || r.статус==='Оплачен';
+  const isPaid   = r.оплата || r.платёжСтатус==='Оплачена' || r.статус==='Оплачен';
+  // done = выдана И оплачена
+  if(isIssued && isPaid) return 'done';
   // issued = выдана но не оплачена
-  if(r.выдан && !r.оплата) return 'issued';
-  // paid-inwork = оплачена, но ещё в работе (не выдана)
+  if(isIssued && !isPaid) return 'issued';
+  // не выдана — смотрим плановую дату
   if(!r.выдача) return 'inwork';
   const today = new Date(); today.setHours(0,0,0,0);
   const rel = new Date(r.выдача); rel.setHours(0,0,0,0);
@@ -1980,7 +1983,11 @@ function renderTable(){
   const q=document.getElementById('search-input').value.toLowerCase();
   const fs=document.getElementById('filter-status').value;
   let rows=db.filter(r=>{
-    if(hidePaid&&r.оплата&&r.выдан) return false;
+    if(hidePaid){
+      const _iss = r.выдан||r.рабочийСтатус==='Выдана'||r.статус==='Оплачен';
+      const _pay = r.оплата||r.платёжСтатус==='Оплачена'||r.статус==='Оплачен';
+      if(_iss && _pay) return false;
+    }
     if(deadlineFilter && getDeadlineStatus(r)!==deadlineFilter) return false;
     const txt=[r.гос,r.авто,r.работы,r.зн].join(' ').toLowerCase();
     if(q&&!txt.includes(q)) return false;
