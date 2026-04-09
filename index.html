@@ -965,8 +965,19 @@
   <div class="filter-bar">
     <input type="text" class="filter-input wide" placeholder="🔍 Поиск: номер, марка, работы..." id="search-input" oninput="renderTable()">
     <select class="filter-input" id="filter-status" onchange="renderTable()">
-      <option value="">Все статусы</option>
-      <option>В работе</option><option>Счёт выставлен</option><option>Оплачен</option><option>Оценка</option><option>Нет авто</option><option>Отменён</option>
+      <option value="">Все рабочие статусы</option>
+      <option value="В работе">🔧 В работе</option>
+      <option value="Завершена">✅ Завершена</option>
+      <option value="Выдана">🚗 Выдана</option>
+      <option value="Оценка">📋 Оценка</option>
+      <option value="Нет авто">⏳ Нет авто</option>
+      <option value="Отменён">❌ Отменён</option>
+    </select>
+    <select id="filter-pay-status" onchange="renderTable()" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.12);color:#fff;padding:8px 12px;border-radius:8px;font-size:13px;outline:none">
+      <option value="">Все статусы оплаты</option>
+      <option value="Не оплачена">💳 Не оплачена</option>
+      <option value="Счёт выставлен">📄 Счёт выставлен</option>
+      <option value="Оплачена">💰 Оплачена</option>
     </select>
     <div class="toggle-pill" id="hide-paid-toggle" onclick="toggleHidePaid()">
       <div class="dot"></div>Скрыть выданные
@@ -1345,9 +1356,22 @@
         </div>
 
         <div class="form-group">
-          <label>Статус работы</label>
-          <select id="f-status">
-            <option>В работе</option><option>Счёт выставлен</option><option>Оплачен</option><option>Оценка</option><option>Нет авто</option><option>Отменён</option>
+          <label>Рабочий статус</label>
+          <select id="f-work-status">
+            <option value="В работе">🔧 В работе</option>
+            <option value="Завершена">✅ Завершена</option>
+            <option value="Выдана">🚗 Выдана</option>
+            <option value="Оценка">📋 Оценка</option>
+            <option value="Нет авто">⏳ Нет авто</option>
+            <option value="Отменён">❌ Отменён</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Статус оплаты</label>
+          <select id="f-pay-status">
+            <option value="Не оплачена">💳 Не оплачена</option>
+            <option value="Счёт выставлен">📄 Счёт выставлен</option>
+            <option value="Оплачена">💰 Оплачена</option>
           </select>
         </div>
         <div class="form-group"><label>Комментарий</label><input type="text" id="f-note" placeholder="Доп. информация"></div>
@@ -1836,6 +1860,17 @@ rebuildWorksCat();
 
 
 let db = JSON.parse(localStorage.getItem('rc_db3')||'null');
+// Миграция: заполняем новые поля статусов из старых
+if(db) db = db.map(r => {
+  if(!r.рабочийСтатус){
+    const st = r.статус||'В работе';
+    r.рабочийСтатус = ['В работе','Оценка','Нет авто','Отменён'].includes(st)?st:(r.оплата||r.выдан)?'Выдана':'В работе';
+  }
+  if(!r.платёжСтатус){
+    r.платёжСтатус = r.оплата?'Оплачена':r.счет?'Счёт выставлен':'Не оплачена';
+  }
+  return r;
+});
 if(!db) { db=RAW.map((r,i)=>({...r,id:Date.now()+i,доход:(r.цена||0)-(r.себест||0)})); saveDB(); }
 let editId=null, sortField=null, sortDir=1, hidePaid=false, activePeriod='month', selectedWorks=[];
 
@@ -1876,8 +1911,11 @@ let deadlineFilter = null; // 'overdue'|'today'|'soon'|'inwork'|'done'|null
 
 // ══════════ DEADLINE HELPERS ══════════
 function getDeadlineStatus(r){
-  if(r.оплата) return 'done';
-  if(r.выдан) return 'issued'; // выдан но не оплачен
+  // done = оплачена И выдана
+  if(r.оплата && r.выдан) return 'done';
+  // issued = выдана но не оплачена
+  if(r.выдан && !r.оплата) return 'issued';
+  // paid-inwork = оплачена, но ещё в работе (не выдана)
   if(!r.выдача) return 'inwork';
   const today = new Date(); today.setHours(0,0,0,0);
   const rel = new Date(r.выдача); rel.setHours(0,0,0,0);
@@ -1942,11 +1980,19 @@ function renderTable(){
   const q=document.getElementById('search-input').value.toLowerCase();
   const fs=document.getElementById('filter-status').value;
   let rows=db.filter(r=>{
-    if(hidePaid&&r.оплата) return false;
+    if(hidePaid&&r.оплата&&r.выдан) return false;
     if(deadlineFilter && getDeadlineStatus(r)!==deadlineFilter) return false;
     const txt=[r.гос,r.авто,r.работы,r.зн].join(' ').toLowerCase();
     if(q&&!txt.includes(q)) return false;
-    if(fs&&r.статус!==fs) return false;
+    if(fs){
+      const wst = r.рабочийСтатус||r.статус||'В работе';
+      if(wst!==fs) return false;
+    }
+    const fps=document.getElementById('filter-pay-status')?.value;
+    if(fps){
+      const pst = r.платёжСтатус||(r.оплата?'Оплачена':r.счет?'Счёт выставлен':'Не оплачена');
+      if(pst!==fps) return false;
+    }
     return true;
   });
   // Default sort: overdue first, then today, soon, inwork, done
@@ -1971,7 +2017,14 @@ function renderTable(){
   empty.style.display='none';
   tbody.innerHTML=rows.map(r=>{
     const ds=getDeadlineStatus(r);
-    const sb={'Оплачен':'badge-green','Счёт выставлен':'badge-blue','В работе':'badge-yellow','Оценка':'badge-gray','Нет авто':'badge-gray','Отменён':'badge-red','Выдан (не оплачен)':'badge-red'}[r.статус]||'badge-gray';
+    const workSt = r.рабочийСтатус||r.статус||'В работе';
+    const paySt  = r.платёжСтатус||(r.оплата?'Оплачена':r.счет?'Счёт выставлен':'Не оплачена');
+    const workBadge = {
+      'В работе':'badge-yellow','Завершена':'badge-green','Выдана':'badge-blue',
+      'Оценка':'badge-gray','Нет авто':'badge-gray','Отменён':'badge-red'
+    }[workSt]||'badge-yellow';
+    const payBadge = {'Оплачена':'badge-green','Счёт выставлен':'badge-blue','Не оплачена':'badge-gray'}[paySt]||'badge-gray';
+    const sb = workBadge; // для совместимости
     const ws=(r.работы||'').split('\n').filter(Boolean);
     const wshort=ws.length>1?`${ws[0]} <span style="color:var(--gray400);font-size:11px">+${ws.length-1}</span>`:(ws[0]||'—');
     const rowClass = ds==='overdue'?'row-overdue':ds==='today'?'row-today':ds==='soon'?'row-soon':ds==='done'?'row-done':ds==='issued'?'row-issued':'row-inwork';
@@ -1984,7 +2037,10 @@ function renderTable(){
       <td class="col-hide-md" style="color:var(--gray400);font-size:13px;white-space:nowrap">${r.выдача||'—'}</td>
       <td style="white-space:nowrap;cursor:pointer" onclick="toggleIssued(${r.id})" title="${r.выдан?'Снять отметку выдачи':'Отметить как выданный'}">${fmtDeadlineBadge(r)}</td>
       <td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--gold2);white-space:nowrap">${fmt(r.цена)}</td>
-      <td><span class="badge ${sb}">${r.статус}</span></td>
+      <td style="white-space:nowrap">
+        <div><span class="badge ${workBadge}">${workSt}</span></div>
+        <div style="margin-top:3px"><span class="badge ${payBadge}" style="font-size:10px">${paySt}</span></div>
+      </td>
       <td class="col-hide-md"><span class="check-icon" onclick="toggleField(${r.id},'счет')">${r.счет?'✅':'⬜'}</span></td>
       <td><span class="check-icon" onclick="toggleField(${r.id},'оплата')">${r.оплата?'✅':'⬜'}</span></td>
       <td style="white-space:nowrap">
@@ -2007,7 +2063,9 @@ function renderTable(){
         </div>
         <div class="expand-block">
           <label>Срок и статус</label>
-          <div style="margin-bottom:8px">${fmtDeadlineBadge(r)}</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">${fmtDeadlineBadge(r)}</div>
+          <div style="font-size:13px;color:var(--gray400);margin-bottom:4px">Работа: <b style="color:#fff">${r.рабочийСтатус||'В работе'}</b></div>
+          <div style="font-size:13px;color:var(--gray400);margin-bottom:8px">Оплата: <b style="color:#fff">${r.платёжСтатус||(r.оплата?'Оплачена':r.счет?'Счёт выставлен':'Не оплачена')}</b></div>
           <div style="font-size:13px;color:var(--gray400)">Приёмка: ${r.приемка||'—'}</div>
           <div style="font-size:13px;color:var(--gray400)">Выдача: ${r.выдача||'—'}</div>
           ${r.note?`<div style="margin-top:10px;font-size:13px;color:var(--gray400)">${r.note}</div>`:''}
@@ -2036,18 +2094,12 @@ function toggleExpand(id){
 function toggleIssued(id){
   const r=db.find(x=>x.id===id); if(!r) return;
   if(r.выдан){
-    // Снять отметку выдачи
     r.выдан = false;
-    if(r.статус === 'Выдан (не оплачен)') r.статус = 'В работе';
+    r.рабочийСтатус = 'В работе';
   } else {
-    // Отметить как выданный
     r.выдан = true;
-    if(r.статус === 'Оплачен' || r.статус === 'Счёт выставлен'){
-      // Уже оплачен — просто помечаем выданным, статус не меняем
-    } else {
-      // Не оплачен — ставим "Выдан (не оплачен)" чтобы было видно долг
-      r.статус = 'Выдан (не оплачен)';
-    }
+    r.рабочийСтатус = 'Выдана';
+    // Платёжный статус не трогаем — он независим
   }
   saveDB(); renderTable();
 }
@@ -2055,13 +2107,14 @@ function toggleIssued(id){
 function toggleField(id,field){
   const r=db.find(x=>x.id===id); if(!r) return;
   r[field]=!r[field];
+  // Синхронизируем платёжСтатус с флагами
   if(field==='оплата'){
-    if(r.оплата){r.счет=true;r.статус='Оплачен';}
-    else{r.статус=r.счет?'Счёт выставлен':'В работе';}
+    if(r.оплата){ r.счет=true; r.платёжСтатус='Оплачена'; }
+    else { r.платёжСтатус=r.счет?'Счёт выставлен':'Не оплачена'; }
   }
   if(field==='счет'){
-    if(r.счет){if(r.статус==='В работе')r.статус='Счёт выставлен';}
-    else{r.оплата=false;r.статус='В работе';}
+    if(r.счет){ if(!r.оплата) r.платёжСтатус='Счёт выставлен'; }
+    else { r.оплата=false; r.платёжСтатус='Не оплачена'; }
   }
   saveDB(); renderTable();
 }
@@ -2169,7 +2222,8 @@ function openEditModal(id){
   document.getElementById('f-mat').value=r.мат||'';
   document.getElementById('f-cost').value=r.себест||'';
   document.getElementById('f-price').value=r.цена||'';
-  document.getElementById('f-status').value=r.статус||'В работе';
+  document.getElementById('f-work-status').value=r.рабочийСтатус||'В работе';
+  document.getElementById('f-pay-status').value=r.платёжСтатус||'Не оплачена';
   document.getElementById('f-note').value=r.note||'';
   const fzk=document.getElementById('f-zakazchik');if(fzk)fzk.value=r.заказчик||'';
   document.getElementById('f-markup').value='1.35';
@@ -2595,13 +2649,15 @@ function saveRecord(){
     мат:mat,
     себест:cost,
     цена:price,
-    статус:document.getElementById('f-status').value,
+    рабочийСтатус:document.getElementById('f-work-status')?.value||'В работе',
+    платёжСтатус:document.getElementById('f-pay-status')?.value||'Не оплачена',
+    статус:document.getElementById('f-work-status')?.value||'В работе', // для обратной совместимости
     note:document.getElementById('f-note').value.trim(),
     заказчик:document.getElementById('f-zakazchik').value.trim(),
   };
   rec.доход=rec.цена-rec.себест;
-  rec.счет=['Счёт выставлен','Оплачен'].includes(rec.статус);
-  rec.оплата=rec.статус==='Оплачен';
+  rec.счет=rec.платёжСтатус==='Счёт выставлен'||rec.платёжСтатус==='Оплачена';
+  rec.оплата=rec.платёжСтатус==='Оплачена';
   if(!rec.авто){alert('Введите марку/модель');return;}
 
   // ВАЖНО: ставим распределение в rec ДО записи в db
@@ -3474,7 +3530,19 @@ async function initFirebase(){
       if(data){
         // Пропускаем если мы только что сохранили сами (< 3 сек) — иначе Firebase перезапишет свежие данные
         if(window.__lastDbSave && Date.now() - window.__lastDbSave < 3000) return;
-        db = Array.isArray(data) ? data : Object.values(data);
+        const raw = Array.isArray(data) ? data : Object.values(data);
+        // Миграция: заполняем новые поля из старых если их нет
+        db = raw.map(r => {
+          if(!r.рабочийСтатус){
+            const st = r.статус||'В работе';
+            r.рабочийСтатус = ['В работе','Оценка','Нет авто','Отменён'].includes(st)?st:
+              (r.оплата||r.выдан)?'Выдана':'В работе';
+          }
+          if(!r.платёжСтатус){
+            r.платёжСтатус = r.оплата?'Оплачена':r.счет?'Счёт выставлен':'Не оплачена';
+          }
+          return r;
+        });
         localStorage.setItem('rc_db3', JSON.stringify(db));
         renderTable();
         updateHeader();
